@@ -1,0 +1,164 @@
+import React from 'react';
+import Home from './pages/Home';
+import Error from "./pages/Error";
+import Forbidden from "./pages/Forbidden";
+import NotFound from "./pages/NotFound";
+import SignIn from "./pages/user/account/SignIn";
+import SignUp from "./pages/user/account/SignUp";  
+import UserList from "./pages/admin/users/UserList";
+import DoctorList from "./pages/admin/med_institution/DoctorList";
+import { Route } from 'react-router-dom';
+import UserRole from "./constants/UserRole";
+import { isUserRole } from './util/UserUtil';
+import SuperAdminPortal from './pages/admin/SuperAdminPortal';
+import Profile from './pages/user/profile/Profile';
+import ClinicalTrial from './pages/user/clinical_trial/ClinicalTrials';
+import AddClinicalTrial from './pages/doctor/AddClinicalTrial';
+import TaskList from './pages/user/task/TaskList';
+import ClinicalTrialAccessRequest from './pages/user/task/ClinicalTrialAccessRequest';
+import ClinicalTrialPreviewList from './pages/user/ClinicalTrialPreviewList';
+
+let ROUTES = {
+    Home: {
+        path: '/',
+        component: <Home />,
+        auth: true
+    },
+    Error: {
+        path: '/error',
+        component: <Error />,
+        auth: false
+    },
+    Forbidden: {
+        path: '/forbidden',
+        component: <Forbidden />,
+        auth: false
+    },
+    NotFound: {
+        path: '/not-found',
+        component: <NotFound />,
+        auth: false
+    },
+    SignIn: {
+        path: '/signIn',
+        component: <SignIn />,
+        auth: false
+    },
+    SignUp: {
+        path: '/sign-up',
+        component: <SignUp />,
+        auth: false
+    },
+    SuperAdminPortal: {
+        path: '/superAdmin',
+        component: <SuperAdminPortal  />,
+        auth: true,
+        role: UserRole.ROLE_SUPER_ADMIN
+    },
+    Profile: {
+        path: '/profile',
+        component: <Profile  />,
+        auth: true,
+    },
+    TaskList: {
+        path: '/tasks',
+        component: <TaskList  />,
+        auth: true,
+    },
+    ClinicalTrialAccessRequest: {
+        path: '/accessRequest',
+        component: <ClinicalTrialAccessRequest  />,
+        auth: true,
+    },
+    ClinicalTrial: {
+        path: '/trials',
+        component: <ClinicalTrial  />,
+        auth: true,
+    },
+    ClinicalTrialPreviewList: {
+        path: '/trialsPreview',
+        component: <ClinicalTrialPreviewList  />,
+        auth: true,
+    },
+    AddClinicalTrial: {
+        path: '/addClinicalTrial',
+        component: <AddClinicalTrial  />,
+        auth: true,
+        role: UserRole.DOCTOR
+    },
+    DoctorList: {
+        path: '/doctors',
+        component: <DoctorList  />,
+        auth: true,
+        role: UserRole.ROLE_MED_ADMIN
+    },
+    UserList: {
+        path: '/users',
+        component: <UserList  />,
+        auth: true,
+        role: UserRole.ADMIN
+    },
+};
+
+export default ROUTES;
+
+function getRoute(path) {
+
+    for (const value of Object.values(ROUTES)) {
+
+        if (value.path === path) {
+            return value;
+        }
+    }
+
+    return null;
+}
+
+export function checkPath(path) {
+
+    let pathObject = getRoute(path);
+
+    if (!pathObject) {
+        return true;
+    }
+
+    if (pathObject.auth) {
+        return pathObject.auth;
+    }
+
+    return false;
+}
+
+export function hasProprieteRole(path, user){
+    if(!user){
+        return true;
+    }
+
+    let pathObject = getRoute(path);
+
+    if(!pathObject){
+        return false;
+    }
+
+    if(!pathObject.role){
+        return true;
+    } else {
+        return isUserRole(user, pathObject.role);
+    }
+}
+
+export function getRoutes() {
+
+    let result = [];
+
+    for (const value of Object.values(ROUTES)) {
+
+        result.push(
+            <Route key={'route-' + result.length} exact path={value.path} render={() => (
+                value.component
+            )} />
+        )
+    }
+
+    return result;
+}
