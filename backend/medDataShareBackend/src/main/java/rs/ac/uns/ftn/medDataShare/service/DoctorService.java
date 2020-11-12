@@ -1,5 +1,7 @@
 package rs.ac.uns.ftn.medDataShare.service;
 
+import org.checkerframework.checker.units.qual.C;
+import org.hl7.fhir.r4.model.ImagingStudy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -51,10 +53,13 @@ public class DoctorService implements UserInterface<MedWorker, MedWorkerDto, Med
     @Autowired
     private ClinicalTrialRepository clinicalTrialRepository;
 
+    @Autowired
+    private FhirService fhirService;
+
     @Override
     public MedWorkerDto editUser(MedWorkerForm medWorkerDto) {
-        MedWorker medWorker = medWorkerConverter.convertFromDto(medWorkerDto, true);
-        return medWorkerConverter.convertToDto(medWorkerRepository.save(medWorker));
+        MedWorker medWorker = convert(medWorkerDto, true);
+        return convert(medWorkerRepository.save(medWorker));
     }
 
     public ClinicalTrialDto addClinicalTrial(ClinicalTrialForm clinicalTrialForm ) {
@@ -62,19 +67,19 @@ public class DoctorService implements UserInterface<MedWorker, MedWorkerDto, Med
         String doctor = user.getId();
         clinicalTrialForm.setDoctor(doctor);
 
-        return convert(clinicalTrialRepository.save(convert(clinicalTrialForm)));
+        return fhirService.addClinicalTrial(clinicalTrialForm);
     }
 
     public List<CommonUserDto> getPatients(){
         return commonUserRepository.findAll().stream().map(this::convert).collect(Collectors.toList());
     }
 
-    private ClinicalTrial convert(ClinicalTrialForm clinicalTrialForm){
-        return clinicalTrialConverter.convertFromDto(clinicalTrialForm, false);
+    private MedWorker convert(MedWorkerForm medWorkerForm, boolean update){
+        return medWorkerConverter.convertFromDto(medWorkerForm, update);
     }
 
-    private ClinicalTrialDto convert(ClinicalTrial clinicalTrial){
-        return clinicalTrialConverter.convertToDto(clinicalTrial);
+    private MedWorkerDto convert(MedWorker medWorker){
+        return medWorkerConverter.convertToDto(medWorker);
     }
 
     private CommonUserDto convert(CommonUser commonUser){

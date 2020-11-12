@@ -28,4 +28,6 @@ public class ClinicalTrialDto {
     private String doctor;
 
     private AccessType accessType;
+
+    private String resourcePath;
 }

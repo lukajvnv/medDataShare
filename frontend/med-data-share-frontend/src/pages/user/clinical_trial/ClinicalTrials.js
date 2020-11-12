@@ -143,12 +143,9 @@ class ClinicalTrials extends Page {
                         columns={columns} 
                         pageSize={5} 
                         page={1}
-                        // checkboxSelection 
                         autoHeight 
                         onRowClick={this.onRowClick}
                         onRowSelected={this.onRowSelected}
-                        // showCellRightBorder
-                        // showColumnRightBorder
                     />
                 </Box>
                 

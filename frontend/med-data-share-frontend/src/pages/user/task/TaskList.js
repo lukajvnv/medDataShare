@@ -22,24 +22,47 @@ import ClinicalTrialAccessRequestList from './ClinicalTrialAccessRequestList';
 
 export class TaskList extends Page {
 
+    tabsDefinition = {
+        defineAccess: { label: strings.tasklist.tabs.trialDefineAccess, icon: <GetAppIcon />, value:  TaskListPageState.ClinicalTrialDefineAccess},
+        accessRequest: { label: strings.tasklist.tabs.trialAccessRequest, icon: <GetAppIcon />, value:  TaskListPageState.ClinicalTrialAccessRequest },
+        accessHistory: { label: strings.tasklist.tabs.trialAccessHistory, icon: <HistoryIcon />, value:  TaskListPageState.ClinicalTrialAccessHistory },
+        requestedAccess: {label: strings.tasklist.tabs.requestedTrialAccess, icon: <SendIcon />, value:  TaskListPageState.RequestedTrialAccess }
+    }   
+
     constructor(props) {
         super(props);
 
         this.props.changeFullScreen(false);
 
-        const currentActiveTab = props.location.state ?
-            this.props.location.state.currentActiveTab : TaskListPageState.ClinicalTrialDefineAccess
+        let currentActiveTab = props.location.state ?
+            this.props.location.state.currentActiveTab : TaskListPageState.ClinicalTrialAccessRequest;
+
+        let tabs = [];
+        if (this.isCommonUser()){
+            tabs = ['defineAccess', 'accessRequest', 'accessHistory', 'requestedAccess'];
+        } else {
+            tabs = ['requestedAccess'];
+            currentActiveTab = TaskListPageState.RequestedTrialAccess
+        }
 
         this.state = {
             currentActiveTab: currentActiveTab,
+            tabs: tabs
         }
 
         this.tabChange = this.tabChange.bind(this);
     }
 
     tabChange(event, newTabValueIndex){
-        const currentActiveTab = newTabValueIndex;
+        const currentActiveTabDefinitionKey = this.state.tabs[newTabValueIndex];
+        const tab = this.tabsDefinition[currentActiveTabDefinitionKey];
+        const currentActiveTab = tab.value;
         this.setState({currentActiveTab});
+    }
+
+    renderTab(tabKey){
+        const tab = this.tabsDefinition[tabKey];
+        return <Tab key={tab.value} label={tab.label} icon={tab.icon}/>
     }
 
     render() {
@@ -55,10 +78,9 @@ export class TaskList extends Page {
                         centered
                         style={{backgroundColor: '#374258'}}
                     >
-                        <Tab label={strings.tasklist.tabs.trialDefineAccess} icon={<GetAppIcon />}/>
-                        <Tab label={strings.tasklist.tabs.trialAccessRequest} icon={<GetAppIcon />} />
-                        <Tab label={strings.tasklist.tabs.trialAccessHistory} icon={<HistoryIcon />}/>
-                        <Tab label={strings.tasklist.tabs.requestedTrialAccess} icon={<SendIcon />} />
+                        {
+                            this.state.tabs.map(tab => this.renderTab(tab))
+                        }
                     </Tabs>
                 </Paper>
                 <Box m={2}>

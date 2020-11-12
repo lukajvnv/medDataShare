@@ -25,7 +25,6 @@ class MedInstitutionList extends TablePage {
         { key: 'name', label: strings.medInstitutionList.name },
         { key: 'address', label: strings.medInstitutionList.address },
         { key: 'dateCreated', label: strings.userList.dateCreated, transform: 'renderColumnDate' },
-        { key: 'enabled', label: strings.userList.enabled, transform: 'renderColumnDeleted' }
     ];
 
     fetchData() {

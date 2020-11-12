@@ -1,8 +1,8 @@
-import { request, uploadFile } from "../base/HTTP";
+import { request, submitFormData } from "../base/HTTP";
 import HttpMethod from "../constants/HttpMethod";
 
 export async function addClinicalTrial(data) {
-    return await uploadFile('/doctor/clinicalTrial', data, HttpMethod.POST);
+    return await submitFormData('/doctor/clinicalTrial', data, HttpMethod.POST);
 }
 
 export async function getPatients() {

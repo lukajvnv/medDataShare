@@ -6,6 +6,7 @@ import { withRouter } from "react-router-dom";
 import connect from "react-redux/es/connect/connect";
 import {stringToDate, dateBefore} from "../../util/DateUtil";
 import {getMedInstitutions, getClinicalTrialPreview, sendAccessRequest} from "../../services/UserService";
+import {withSnackbar} from "notistack";
 
 import * as Actions from "../../actions/Actions";
 import strings from '../../localization';
@@ -180,6 +181,7 @@ class ClinicalTrialPreviewList extends Page {
                 return;
             }
 
+            this.props.enqueueSnackbar(strings.clinicalTrial.preview.sendRequestSuccess, { variant: 'success' });
             this.closeDetailView();
         })
         .catch(error => {
@@ -313,4 +315,4 @@ function mapStateToProps({ menuReducers, authReducers }) {
     return { menu: menuReducers, user: authReducers.user };
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ClinicalTrialPreviewList));
+export default withSnackbar(withRouter(connect(mapStateToProps, mapDispatchToProps)(ClinicalTrialPreviewList)));

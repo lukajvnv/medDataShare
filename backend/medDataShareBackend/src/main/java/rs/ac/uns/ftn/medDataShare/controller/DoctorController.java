@@ -57,7 +57,7 @@ public class DoctorController {
         if(!validInputFile(clinicalTrialForm.getFile())) {
             throw new ValidationException("Invalid file format");
         }
-//        uploadImage(clinicalTrialForm.getFile());
+
         return doctorService.addClinicalTrial(clinicalTrialForm);
     }
 
@@ -80,28 +80,5 @@ public class DoctorController {
         }
 
         return true;
-    }
-
-    public boolean uploadImage(MultipartFile profileImage) {
-        final String IMAGE_FOLDER= "images/";
-        try {
-            String fileName = profileImage.getOriginalFilename();
-            int dotIndex =  fileName.lastIndexOf('.');
-            String fileType = fileName.substring(dotIndex + 1, fileName.length());
-            String fileUrl = IMAGE_FOLDER + fileName;
-
-            File outputfile = new File(fileUrl);
-
-            ByteArrayInputStream bis = new ByteArrayInputStream(profileImage.getBytes());
-            BufferedImage bImage = ImageIO.read(bis);
-            ImageIO.write(bImage, fileType, outputfile);
-
-            return true;
-
-        } catch (IOException e) {
-            System.out.println("Exception occured :" + e.getMessage());
-            return false;
-        }
-
     }
 }

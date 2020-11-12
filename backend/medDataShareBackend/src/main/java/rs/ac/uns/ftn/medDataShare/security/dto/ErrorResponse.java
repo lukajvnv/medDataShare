@@ -1,11 +1,5 @@
 package rs.ac.uns.ftn.medDataShare.security.dto;
 
-/*
- * Pomocna klasa za vracanje greske prilikom pokusaja logovanja
- * neverifikovanog korisnika
- *
- * */
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;

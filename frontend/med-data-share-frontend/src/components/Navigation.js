@@ -36,14 +36,14 @@ class Navigation extends Component {
             path: '/profile', icon: <PersonIcon />, text: strings.menu.Profile
         },
         {
-            path: '/tasks', icon: <FormatListNumberedIcon />, text: strings.menu.Tasks
-        },
-        {
             path: '/notifications', icon: <NotificationsIcon />, text: strings.menu.Notifications
         }
     ]
 
     navItemsUser = [
+        {
+            path: '/tasks', icon: <FormatListNumberedIcon />, text: strings.menu.Tasks
+        },
         {
             path: '/trials', icon: <MenuBookIcon />, text: strings.menu.Trials
         },
@@ -53,6 +53,9 @@ class Navigation extends Component {
     ]
 
     navItemsDoctor = [
+        {
+            path: '/tasks', icon: <FormatListNumberedIcon />, text: strings.menu.Tasks
+        },
         {
             path: '/addClinicalTrial', icon: <AddIcon />, text: strings.menu.AddMedicalExamination
         },

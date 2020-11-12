@@ -59,7 +59,6 @@ const MedAdminForm = ({
             value={ data.lastName }
         />
         <FormControl 
-            // className="formControl"
             fullWidth
             error={hasError(errors, 'medInstitution')}
         >

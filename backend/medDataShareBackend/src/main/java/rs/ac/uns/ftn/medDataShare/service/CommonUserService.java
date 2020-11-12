@@ -46,6 +46,9 @@ public class CommonUserService implements UserInterface<CommonUser, CommonUserDt
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private FhirService fhirService;
+
     @Override
     public CommonUserDto editUser(CommonUserDto object) {
         CommonUser commonUser = commonUserConverter.convertFromDto(object, true);
@@ -54,31 +57,15 @@ public class CommonUserService implements UserInterface<CommonUser, CommonUserDt
 
     public List<ClinicalTrialDto> getUserClinicalTrials(){
         User user = (User) userDetailsService.getLoggedUser();
-        return clinicalTrialRepository
-                .findByPatient(user.getId())
-                .stream().map(this::convert).collect(Collectors.toList());
+        return fhirService.searchImagingStudy(user.getId(), false);
     }
 
     public List<ClinicalTrialDto> getUserClinicalTrialsDefineAccess(){
         User user = (User) userDetailsService.getLoggedUser();
-        return clinicalTrialRepository
-                .findByPatientAndAccessType(user.getId(), AccessType.IDLE)
-                .stream().map(this::convert).collect(Collectors.toList());
-    }
-
-    private ClinicalTrialDto convert(ClinicalTrial clinicalTrial){
-        return clinicalTrialConverter.convertToDto(clinicalTrial);
+        return fhirService.searchImagingStudy(user.getId(), true);
     }
 
     public ClinicalTrialDto updateClinicalTrial(EditClinicalTrialForm editClinicalTrialForm){
-        String clinicalTrailId = editClinicalTrialForm.getId();
-        AccessType accessType = editClinicalTrialForm.getAccessType();
-        Optional<ClinicalTrial> optionalClinicalTrial = clinicalTrialRepository.findById(clinicalTrailId);
-        if(!optionalClinicalTrial.isPresent()){
-            throw new ValidationException("Invalid id");
-        }
-        ClinicalTrial clinicalTrial = optionalClinicalTrial.get();
-        clinicalTrial.setAccessType(accessType);
-        return convert(clinicalTrialRepository.save(clinicalTrial));
+        return fhirService.updateClinicalTrial(editClinicalTrialForm);
     }
 }

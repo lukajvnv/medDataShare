@@ -7,45 +7,10 @@ import { Button } from '@material-ui/core';
 import { Document, Page, pdfjs } from 'react-pdf';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
+import strings from '../localization';
 
-import pdfFile from '../assets/trial.pdf'; 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-// const PdfLoader = () => {
-//   const [numPages, setNumPages] = useState(null);
-//   const [pageNumber, setPageNumber] = useState(3);
- 
-//   const onDocumentLoadSuccess = (proba) => {
-//     const {numPages} = proba
-//     setNumPages(numPages);
-//   }
-
-//   const onDocumentLoadError = (error) => {
-//     console.log(error);
-//   }
- 
-//   return (
-//     <div>
-//       <Document
-//         file={pdfFile}
-//         onLoadSuccess={onDocumentLoadSuccess}
-//         onLoadError={onDocumentLoadError}
-//       >
-//         {/* <Page pageNumber={pageNumber} /> */}
-//         {Array.from(
-//         new Array(numPages),
-//         (el, index) => (
-//           <Page
-//             key={`page_${index + 1}`}
-//             pageNumber={index + 1}
-//           />
-//         ),
-//       )}
-//       </Document>
-//       <p>Page {pageNumber} of {numPages}</p>
-//     </div>
-//   );
-// }
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -53,7 +18,9 @@ const useStyles = makeStyles((theme) => ({
     },
   }));
 
-const PdfLoader = () => {
+const PdfLoader = ({
+  pdf
+}) => {
     const classes = useStyles();
 
     const [numPages, setNumPages] = useState(null);
@@ -79,14 +46,14 @@ const PdfLoader = () => {
     return (
       <>
         <Document
-          file={pdfFile}
+          file={pdf}
           onLoadSuccess={onDocumentLoadSuccess}
         >
           <Page pageNumber={pageNumber} />
         </Document>
         <div>
           <p>
-            Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
+            {strings.pdf.page} {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
           </p>
           <Button
             className={classes.button}
@@ -96,7 +63,7 @@ const PdfLoader = () => {
             variant="contained"
             startIcon={<ChevronLeftIcon />}
           >
-            Previous
+            {strings.pdf.previous}
           </Button>
           <Button
             className={classes.button}
@@ -106,7 +73,7 @@ const PdfLoader = () => {
             variant="contained"
             endIcon={<ChevronRightIcon />}
           >
-            Next
+            {strings.pdf.next}
           </Button>
         </div>
       </>

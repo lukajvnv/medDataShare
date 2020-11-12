@@ -35,13 +35,6 @@ class SignIn extends Page {
         this.keyPress = this.keyPress.bind(this);
     }
 
-    componentDidMount() {
-
-        if(this.props.auth.user) {
-            this.props.history.push('/');
-        }
-    }
-
     keyPress(event) {
 
         if(event.key === 'Enter') {

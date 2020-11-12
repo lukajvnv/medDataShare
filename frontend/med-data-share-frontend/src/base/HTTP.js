@@ -96,17 +96,25 @@ export async function requestFile(url, data = [], method = HttpMethod.GET) {
             'Accept': 'application/json'
         };
 
+        let responseType = 'blob';
+
         if (tokenType) {
             headers['Authorization'] = getToken();
         }
 
-        return await connect(CONFIG.baseUrl + url, data, method, { headers }, false);
+        // params
+        const options = {
+            headers : headers, 
+            responseType:  responseType
+        }
+
+        return await connect(CONFIG.baseUrl + url, data, method, options);
     } catch (error) {
         history.push("/error");
     }
 }
 
-export async function uploadFile(url, data = [], method = HttpMethod.GET) {
+export async function submitFormData(url, data = [], method = HttpMethod.GET) {
 
     try {
 
@@ -124,7 +132,7 @@ export async function uploadFile(url, data = [], method = HttpMethod.GET) {
             headers['Authorization'] = getToken();
         }
 
-        return await connect(CONFIG.baseUrl + url, data, method, { headers }, false);
+        return await connect(CONFIG.baseUrl + url, data, method, { headers });
     } catch (error) {
         history.push("/error");
     }

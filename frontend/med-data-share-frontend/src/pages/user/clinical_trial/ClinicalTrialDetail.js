@@ -8,6 +8,7 @@ import {getError, hasError} from "../../../functions/Validation";
 import strings from "../../../localization";
 
 import rtg from '../../../assets/rtg.jpg';
+import pdfFile from '../../../assets/trial.pdf'; 
 
 import {
     Button, Paper, Slide,
@@ -18,9 +19,12 @@ import {
 } from "@material-ui/core";
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
 
 import PdfLoader from '../../../components/PdfLoader';
 import AccessType from '../../../constants/AccessType';
+
+import { getClinicalTrialInPdf, getClinicalTrialImage } from '../../../services/UserService';
 
 const accessTypeDatasource = [
     {key: AccessType.FORBIDDEN, label: 'For private use only'},
@@ -92,6 +96,47 @@ const ClinicalTrialDetail = ({
     const classes = useStyles();
     const [imageExpanded, setImageExpanded] = React.useState(false);
     const [pdfExpanded, setPdfExpanded] = React.useState(false);
+    const [img, setImg] = React.useState(undefined);
+
+    const exportPdf = () => {
+        getClinicalTrialInPdf(clinicalTrial.id)
+        .then(response => {
+            if(!response.ok){
+                return;
+            }
+            const file = new Blob(
+                [response.data], 
+                {type: 'application/pdf'}
+            );
+            const fileURL = URL.createObjectURL(file);
+            window.open(fileURL);
+        })
+        .catch(error => {
+            
+        });
+    }
+
+    const displayImageAction = (shouldDisplay) => {
+        if(!img && shouldDisplay) {
+            getClinicalTrialImage(clinicalTrial.resourcePath)
+            .then(response => {
+                const file = new Blob(
+                    [response.data], 
+                    {type: 'image/png'});
+                  const fileURL = URL.createObjectURL(file);
+                  setImg(fileURL);
+                  setImageExpanded(shouldDisplay);
+
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        } else {
+            setImageExpanded(shouldDisplay);
+        }
+    }
+
+    const imageSrc = img ? img : rtg;
 
     return (
         <Dialog
@@ -149,7 +194,7 @@ const ClinicalTrialDetail = ({
             }
             {
                 displayResource && <Box mb={1}>
-                    <Accordion expanded={imageExpanded} onChange={() => setImageExpanded(!imageExpanded)}>
+                    <Accordion expanded={imageExpanded} onChange={() => displayImageAction(!imageExpanded)}>
                         <AccordionSummary
                             expandIcon={<ExpandMoreIcon />}
                             aria-controls="panel1bh-content"
@@ -168,7 +213,7 @@ const ClinicalTrialDetail = ({
                         </AccordionSummary>
                         <AccordionDetails>
                         <img 
-                            src={rtg} 
+                            src={imageSrc} 
                             alt="jfdl" 
                             height={500} 
                             style={{
@@ -199,7 +244,7 @@ const ClinicalTrialDetail = ({
                                             </Typography> 
                                         </AccordionSummary>
                                         <AccordionDetails>
-                                            <PdfLoader />
+                                            <PdfLoader pdf={pdfFile} />
                                         </AccordionDetails>
                                     </Accordion>
                                 </Box>
@@ -208,6 +253,13 @@ const ClinicalTrialDetail = ({
             <DialogActions>
                 <Button onClick={onClose} color="secondary">
                     {strings.clinicalTrial.detail.close}
+                </Button>
+                <Button 
+                    color="default" 
+                    startIcon={<ImportExportIcon />}
+                    onClick={exportPdf}
+                    >
+                    {strings.clinicalTrial.detail.export}
                 </Button>
                 <Button onClick={onSubmit} color="primary">
                     {submitLabel}

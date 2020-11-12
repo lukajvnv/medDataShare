@@ -13,6 +13,10 @@ class Home extends Page {
     constructor(props) {
         super(props);
 
+        this.state = {
+
+        }
+
         this.props.changeFullScreen(false);
     }
 
@@ -25,7 +29,6 @@ class Home extends Page {
     }
 
     render() {
-
         return (
             <div >                
                <Loader/>

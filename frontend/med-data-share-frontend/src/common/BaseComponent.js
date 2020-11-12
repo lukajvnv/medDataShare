@@ -44,6 +44,15 @@ class BaseComponent extends Component {
         return array.indexOf(item) !== -1;
     }
 
+    isCommonUser() {
+
+        if(!this.props.user) {
+            return false;
+        }
+
+        return isUserRole(this.props.user, UserRole.USER);
+    }
+
     isMedAdmin() {
 
         if(!this.props.user) {

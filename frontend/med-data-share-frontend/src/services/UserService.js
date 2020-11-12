@@ -1,4 +1,4 @@
-import { request } from "../base/HTTP";
+import { request, requestFile } from "../base/HTTP";
 import HttpMethod from "../constants/HttpMethod";
 import {getPrimarlyRole} from "../util/UserUtil";
 
@@ -48,6 +48,14 @@ export async function getClinicalTrialPreview(data, params) {
     return await request('/user/clinicalTrialPreview', data, HttpMethod.POST, {
         params: params
     });
+}
+
+export async function getClinicalTrialInPdf(clinicalTrialId) {
+    return await requestFile(`/user/file/${clinicalTrialId}`);
+}
+
+export async function getClinicalTrialImage(binaryId) {
+    return await requestFile(`/user/image/${binaryId}`);
 }
 
 export async function sendAccessRequest(data) {

@@ -15,6 +15,7 @@ import rs.ac.uns.ftn.medDataShare.dto.user.UserDto;
 import rs.ac.uns.ftn.medDataShare.repository.MedInstitutionRepository;
 import rs.ac.uns.ftn.medDataShare.repository.MedWorkerRepository;
 import rs.ac.uns.ftn.medDataShare.security.service.UserDetailsServiceImpl;
+import rs.ac.uns.ftn.medDataShare.service.FhirService;
 import rs.ac.uns.ftn.medDataShare.service.UserService;
 import rs.ac.uns.ftn.medDataShare.util.ValidationUtil;
 import rs.ac.uns.ftn.medDataShare.validator.AuthException;
@@ -42,6 +43,9 @@ public class UserController {
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
+
+    @Autowired
+    private FhirService fhirService;
 
     @GetMapping("/current")
     public UserDto getCurrentUser(){
@@ -114,5 +118,15 @@ public class UserController {
             throw new ValidationException(errorMsg);
         }
         return userService.sendAccessRequest(clinicalTrialAccessSendRequestForm);
+    }
+
+    @GetMapping("/image/{binaryId}")
+    public byte[] getImage(@PathVariable String binaryId) {
+        return fhirService.getImage(binaryId);
+    }
+
+    @GetMapping("/file/{clinicalTrialId}")
+    public byte[] exportInPdf(@PathVariable String clinicalTrialId) {
+        return fhirService.exportInPdf(clinicalTrialId);
     }
 }

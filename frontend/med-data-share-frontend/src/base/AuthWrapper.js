@@ -5,6 +5,7 @@ import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import {isUserLocked, isUserLoggedIn} from "./Auth";
 import { getUserFromLocalStorage } from './HTTP';
+import strings from '../localization';
 
 class AuthWrapper extends Component {
 
@@ -46,7 +47,7 @@ class AuthWrapper extends Component {
             
             this.props.history.push({
                 pathname: '/forbidden',
-                state   : { msg: `Invalid path: '${path}'`}
+                state   : { msg: `${strings.forbidden.unAuthorizedAccess}'${path}'`}
             });
             
             return false;

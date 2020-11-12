@@ -9,7 +9,7 @@ import UserList from "./pages/admin/users/UserList";
 import DoctorList from "./pages/admin/med_institution/DoctorList";
 import { Route } from 'react-router-dom';
 import UserRole from "./constants/UserRole";
-import { isUserRole } from './util/UserUtil';
+import { isUserOneOfRoles } from './util/UserUtil';
 import SuperAdminPortal from './pages/admin/SuperAdminPortal';
 import Profile from './pages/user/profile/Profile';
 import ClinicalTrial from './pages/user/clinical_trial/ClinicalTrials';
@@ -53,7 +53,7 @@ let ROUTES = {
         path: '/superAdmin',
         component: <SuperAdminPortal  />,
         auth: true,
-        role: UserRole.ROLE_SUPER_ADMIN
+        roles: [UserRole.ROLE_SUPER_ADMIN]
     },
     Profile: {
         path: '/profile',
@@ -64,6 +64,7 @@ let ROUTES = {
         path: '/tasks',
         component: <TaskList  />,
         auth: true,
+        roles: [UserRole.USER, UserRole.DOCTOR]
     },
     ClinicalTrialAccessRequest: {
         path: '/accessRequest',
@@ -84,19 +85,19 @@ let ROUTES = {
         path: '/addClinicalTrial',
         component: <AddClinicalTrial  />,
         auth: true,
-        role: UserRole.DOCTOR
+        roles: [UserRole.DOCTOR]
     },
     DoctorList: {
         path: '/doctors',
         component: <DoctorList  />,
         auth: true,
-        role: UserRole.ROLE_MED_ADMIN
+        roles: [UserRole.ROLE_MED_ADMIN]
     },
     UserList: {
         path: '/users',
         component: <UserList  />,
         auth: true,
-        role: UserRole.ADMIN
+        roles: [UserRole.ADMIN]
     },
 };
 
@@ -140,10 +141,10 @@ export function hasProprieteRole(path, user){
         return false;
     }
 
-    if(!pathObject.role){
+    if(!pathObject.roles){
         return true;
     } else {
-        return isUserRole(user, pathObject.role);
+        return isUserOneOfRoles(user, pathObject.roles);
     }
 }
 

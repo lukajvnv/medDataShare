@@ -53,7 +53,8 @@ let strings = new LocalizedStrings({
         forbidden: {
             plain: 'Forbidden!',
             forbidden: 'Forbidden! Please sign out and sign-in once again!',
-            dashboard: 'Dashboard'
+            dashboard: 'Dashboard',
+            unAuthorizedAccess: 'You do not have access right to the path: '
         },
 
         error: {
@@ -217,6 +218,7 @@ let strings = new LocalizedStrings({
                 pdf: 'Pdf file',
                 institution: 'Institution',
                 clinicalTrial: 'Clinical trial',
+                export: "Export in pdf"
             },
             form: {
                 pageTitle: 'Add clinical trial',
@@ -258,7 +260,9 @@ let strings = new LocalizedStrings({
                     institutions: 'Institutions',
                     orderBy: 'Order by',
                     cancel: 'Cancel'
-                }
+                },
+                sendRequestSuccess: 'Your trial access request is successfully sent. To follow status of your access open TASKS under REQUESTED tab',
+                sendRequestError: 'Error while sending trial access request'
             }
         },
 
@@ -272,7 +276,9 @@ let strings = new LocalizedStrings({
             trialDefineAccess: {
                 action: 'Define',
                 pageTitle: 'Your trials need to be defined access type',
-                submit: 'Define'
+                submit: 'Define',
+                defineAccessSuccess: 'Your action is successfully recorded',
+                defineAccessError: 'Error while defining access for the trial'
             },
             trialAccessRequest: {
                 pageTitle: 'Access requests to your clinical trial',
@@ -290,6 +296,8 @@ let strings = new LocalizedStrings({
                     anonymity: 'Ensure anonymity of patient\'s sensitive data',
                     from: 'From',
                     until: 'Until',
+                    decisionSuccess: 'Your decision is successfully recorded',
+                    decisionError: 'Error while recording decision'
                 },
                 sendRequest: 'Send request'
             },
@@ -323,6 +331,12 @@ let strings = new LocalizedStrings({
                 submit: 'Edit',
                 imageError: 'Wrong image format(.jpg or .png are allowed)'
             },
+        }, 
+
+        pdf: {
+            page: 'Page',
+            next: 'Next',
+            previous: 'Previous'
         }
         
     }, 
@@ -379,7 +393,9 @@ let strings = new LocalizedStrings({
         forbidden: {
             plain: 'Onemogućeno!',
             forbidden: 'Onemogućeno! Molim Vas odjavite se i pokušajte ponovo!',
-            dashboard: 'Početna'
+            dashboard: 'Početna',
+            unAuthorizedAccess: 'Nemate prava da pristupite putanji: '
+
         },
 
         error: {
@@ -543,6 +559,7 @@ let strings = new LocalizedStrings({
                 pdf: 'Pdf fajla',
                 institution: 'Medicinska ustanova',
                 clinicalTrial: 'Medicinski pregled',
+                export: 'Izvezi u pdf'
             },
             form: {
                 pageTitle: 'Dodavanje pregleda',
@@ -584,7 +601,9 @@ let strings = new LocalizedStrings({
                     institutions: 'Medicinska ustanova',
                     orderBy: 'Sortiraj po',
                     cancel: 'Poništi'
-                }
+                },
+                sendRequestSuccess: 'Uspešno poslat zahtev za pristup pregledu. Kako biste pratili status Vašeg zahteva otvoriti Zadaci, tab: Zahtevani pristup',
+                sendRequestError: 'Greška prilikom zahteva za pristup pregledu'
             }
         },
 
@@ -598,7 +617,9 @@ let strings = new LocalizedStrings({
             trialDefineAccess: {
                 action: 'Definiši',
                 pageTitle: 'Vaši pregledi za koje je neophodno defisati pristup',
-                submit: 'Definiši'
+                submit: 'Definiši',
+                defineAccessSuccess: 'Uspešno defisano pravo pristupa Vašem pregledu',
+                defineAccessError: 'Greška prilikom definisanja prava pristupa Vašeg pregleda'
             },
             trialAccessRequest: {
                 pageTitle: 'Zahtevi za pristup Vašim pregledima',
@@ -616,6 +637,8 @@ let strings = new LocalizedStrings({
                     anonymity: 'Obezbedi anonimnost ličnih osetljivih podataka',
                     from: 'Od',
                     until: 'Do',
+                    decisionSuccess: 'Vaša odluka je uspešno sačuvana',
+                    decisionError: 'Greška prilikom čuvanja vaše odluke'
                 },
                 sendRequest: 'Pošalji zahtev'
             },
@@ -649,6 +672,12 @@ let strings = new LocalizedStrings({
                 submit: 'Uredi',
                 imageError: 'Pogrešan format(.jpg or .png su dozvoljeni)'
             },
+        },
+
+        pdf: {
+            page: 'Strana',
+            next: 'Sledeća',
+            previous: 'Prethodna'
         }
     }
     

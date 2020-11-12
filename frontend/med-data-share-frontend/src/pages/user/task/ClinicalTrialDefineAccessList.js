@@ -144,6 +144,7 @@ class ClinicalTrialDefineAccess extends Page {
                 return;
             }
             console.log(response);
+            this.props.enqueueSnackbar(strings.tasklist.trialDefineAccess.defineAccessSuccess, { variant: 'success' });
             this.setState({displayDetailView: false});
             this.fetchData();
         })
@@ -169,12 +170,9 @@ class ClinicalTrialDefineAccess extends Page {
                         columns={columns} 
                         pageSize={5} 
                         page={1}
-                        // checkboxSelection 
                         autoHeight 
                         onRowClick={this.onRowClick}
                         onRowSelected={this.onRowSelected}
-                        // showCellRightBorder
-                        // showColumnRightBorder
                     />
                 </Box>
                 

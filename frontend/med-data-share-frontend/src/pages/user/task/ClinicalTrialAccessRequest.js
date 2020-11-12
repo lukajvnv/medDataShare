@@ -133,6 +133,7 @@ class ClinicalTrialAccessRequest extends Page {
                 return;
             }
             console.log(response);
+            this.props.enqueueSnackbar(strings.tasklist.trialAccessRequest.form.decisionSuccess, { variant: 'success' });
             this.goBack();
         })
         .catch(error => {
