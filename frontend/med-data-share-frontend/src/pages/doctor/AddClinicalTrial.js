@@ -76,10 +76,13 @@ class AddClinicalTrial extends Page {
         let formData = new FormData(); 
         formData.append('file', file, file.name); 
         const fileType = file.type;
+
+        
         if(fileType !== FileFormat.jpg && fileType !== FileFormat.png){
             this.props.enqueueSnackbar(strings.clinicalTrial.form.fileUploadError, {variant: 'error'});
-            return;
-        }
+            file = undefined;
+            event.target.value = null;
+        } 
 
         const data = this.state.data;
         data['file'] = file;

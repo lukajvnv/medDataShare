@@ -1,0 +1,52 @@
+plugins {
+    id 'application'
+}
+
+group 'rs.ac.uns.ftn.medDataShare'
+version '1.0-SNAPSHOT'
+
+dependencies {
+    implementation group: 'org.hyperledger.fabric-chaincode-java', name: 'fabric-chaincode-shim', version: '2.+'
+    implementation group: 'org.json', name: 'json', version: '20180813'
+    implementation 'com.owlike:genson:1.5'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    testImplementation 'org.assertj:assertj-core:3.11.1'
+    testImplementation 'org.mockito:mockito-core:2.+'
+}
+
+repositories {
+    maven {
+        url "https://hyperledger.jfrog.io/hyperledger/fabric-maven"
+    }
+    jcenter()
+    maven {
+        url 'https://jitpack.io'
+    }
+
+}
+
+application {
+    mainClass = 'org.hyperledger.fabric.contract.ContractRouter'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+
+}
+
+task deployPreparation(type: Copy) {
+    from 'index'
+    into "build/install/${project.name}"
+}
+
+//task printProperties {
+//    doLast {
+//        println project.name
+//    }
+//}
+
+deployPreparation.dependsOn installDist
+

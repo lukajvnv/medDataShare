@@ -1,0 +1,12 @@
+{
+  "index": {
+    "fields": [
+      {
+        "time": "desc"
+      }
+    ]
+  },
+  "ddoc": "indexClinicalTrialDoc",
+  "name": "indexClinicalTrial",
+  "type": "json"
+}

@@ -240,7 +240,7 @@ let strings = new LocalizedStrings({
                 success: 'Clinical trial added',
                 file: 'Upload file',
                 filePlaceholder: 'Click button Choose file to upload file',
-                fileUploadError: 'Invalid format'
+                fileUploadError: 'Invalid format! JPG AND PNG are supported formats!'
             },
             patientDialog: {
                 pageTitle: 'Find a patient',
@@ -581,7 +581,7 @@ let strings = new LocalizedStrings({
                 success: 'Pregled je dodat',
                 file: 'Učitan fajl',
                 filePlaceholder: 'Klikni Choose file kako bih učitao fajl',
-                fileUploadError: 'Nevalidan format'
+                fileUploadError: 'Nevalidan format! Podržani formati su JPG i PNG!'
             },
             patientDialog: {
                 pageTitle: 'Pronađite pacijenta',
