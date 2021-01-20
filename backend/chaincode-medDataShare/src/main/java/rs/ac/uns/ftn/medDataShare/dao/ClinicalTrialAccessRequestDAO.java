@@ -2,9 +2,6 @@ package rs.ac.uns.ftn.medDataShare.dao;
 
 import com.owlike.genson.Genson;
 import org.hyperledger.fabric.contract.Context;
-import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.CompositeKey;
-import rs.ac.uns.ftn.medDataShare.component.ClinicalTrialContext;
 import rs.ac.uns.ftn.medDataShare.dto.ClinicalTrialAccessRequestDto;
 import rs.ac.uns.ftn.medDataShare.entity.ClinicalTrial;
 import rs.ac.uns.ftn.medDataShare.entity.ClinicalTrialAccessRequest;
@@ -43,11 +40,29 @@ public class ClinicalTrialAccessRequestDAO {
         );
     }
 
+    public ClinicalTrialAccessRequest addClinicalTrialAccessRequest(
+            String patientId,
+            String time,
+            String requesterId,
+            ClinicalTrial clinicalTrial
+    ) {
+        return clinicalTrialAccessRequestCRUD.addClinicalTrialAccessRequest(
+                patientId,
+                time,
+                requesterId,
+                clinicalTrial
+        );
+    }
+
     public ClinicalTrialAccessRequest defineClinicalTrialAccessRequest(
             String key,
-            String decision
+            String decision,
+            String accessAvailableFrom,
+            String accessAvailableUntil,
+            boolean anonymity,
+            ClinicalTrialAccessRequest clinicalTrialAccessRequest
     ) {
-        return clinicalTrialAccessRequestCRUD.defineClinicalTrialAccessRequest(key, decision);
+        return clinicalTrialAccessRequestCRUD.defineClinicalTrialAccessRequest(key, decision, accessAvailableFrom, accessAvailableUntil, anonymity, clinicalTrialAccessRequest);
     }
 
     public ClinicalTrialAccessRequest getClinicalTrialAccessRequest(String key) {

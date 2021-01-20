@@ -1,6 +1,5 @@
 package rs.ac.uns.ftn.medDataShare.dto.user;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -5,28 +5,40 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 @Configuration
 public class MongoConfig {
 
-    private static String connectionString = "mongodb://localhost:27017";
-//    private static String connectionString = "mongodb+srv://luka:luka@cluster0.wa47o.gcp.mongodb.net/test?retryWrites=true&w=majority";
+    @Autowired
+    private Environment environment;
 
     private String getMongoDatabaseUrl() {
-        return connectionString;
+        return environment.getProperty("DB_URL");
     }
 
     @Bean
     public MongoClient mongo() {
         String connectUrl = getMongoDatabaseUrl();
+        String DB_USER_NAME = environment.getProperty("DB_USER_NAME");
+        String DB_USER_DB = environment.getProperty("DB_USER_DB");
+        String DB_USER_PASS = environment.getProperty("DB_USER_PASS");
+
+        System.out.println("DB_URL:" + environment.getProperty("DB_URL"));
+        System.out.println("DB_USER_NAME:" + DB_USER_NAME);
+        System.out.println("DB_USER_DB:" + DB_USER_DB);
+        System.out.println("DB_USER_PASS:" + DB_USER_PASS);
+
         MongoCredential mongoCredential = MongoCredential.createCredential(
-                "myUserAdmin",
-                "admin",
-                "myUserAdmin".toCharArray()
+                DB_USER_NAME,
+                DB_USER_DB,
+                DB_USER_PASS.toCharArray()
         );
+//        MongoCredential.createScramSha256Credential()
         ConnectionString connectionString = new ConnectionString(connectUrl);
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)

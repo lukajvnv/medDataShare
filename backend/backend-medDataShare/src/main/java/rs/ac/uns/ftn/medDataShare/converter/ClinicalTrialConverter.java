@@ -2,11 +2,11 @@ package rs.ac.uns.ftn.medDataShare.converter;
 
 import org.hl7.fhir.r4.model.ImagingStudy;
 import org.springframework.stereotype.Component;
+import rs.ac.uns.ftn.medDataShare.converter.declaration.ConverterInterface;
 import rs.ac.uns.ftn.medDataShare.dto.form.ClinicalTrialForm;
 import rs.ac.uns.ftn.medDataShare.dto.medInstitution.ClinicalTrialDto;
 import rs.ac.uns.ftn.medDataShare.enums.AccessType;
 import rs.ac.uns.ftn.medDataShare.enums.ClinicalTrialType;
-import rs.ac.uns.ftn.medDataShare.model.medInstitution.ClinicalTrial;
 import rs.ac.uns.ftn.medDataShare.util.StringUtil;
 
 @Component
@@ -20,7 +20,7 @@ public class ClinicalTrialConverter implements ConverterInterface<ImagingStudy, 
             resource = object.getSeries().get(0).getBodySite().getCode();
             resource = StringUtil.getIdPart(resource);
         }
-        String relevantParameters = null;
+        String relevantParameters = "";
         if(object.getProcedureCode().size() > 0){
             relevantParameters = object.getProcedureCode().get(0).getText();
         }

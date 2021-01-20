@@ -12,6 +12,11 @@ class Error extends Component {
     constructor(props) {
         super(props);
 
+        const errorMsg = props.location.state ? props.location.state.msg : strings.error.error;
+        this.state = {
+            errorMessage: errorMsg
+        }
+
         this.props.changeFullScreen(true);
     }
 
@@ -22,7 +27,7 @@ class Error extends Component {
 
             <div id='error'>
                 <h1>500</h1>
-                <h3>{ strings.error.error }</h3>
+                <h3>{this.state.errorMessage}</h3>
 
                 <Link to={'/'}>
                     <Button variant="contained" color="secondary">

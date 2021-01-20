@@ -2,7 +2,7 @@ package rs.ac.uns.ftn.medDataShare.validator;
 
 import lombok.Getter;
 
-public class JwtException extends MyException{
+public class JwtException extends MyException {
     @Getter
     private String message;
 

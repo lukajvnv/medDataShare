@@ -1,8 +1,6 @@
 package rs.ac.uns.ftn.medDataShare.dto.medInstitution;
 
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import rs.ac.uns.ftn.medDataShare.enums.AccessType;
 import rs.ac.uns.ftn.medDataShare.enums.ClinicalTrialType;
 

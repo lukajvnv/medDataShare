@@ -2,16 +2,10 @@ package rs.ac.uns.ftn.medDataShare.dao;
 
 import com.owlike.genson.Genson;
 import org.hyperledger.fabric.contract.Context;
-import org.hyperledger.fabric.contract.annotation.Transaction;
-import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
 import org.hyperledger.fabric.shim.ledger.CompositeKey;
-import rs.ac.uns.ftn.medDataShare.component.ClinicalTrialContext;
-import rs.ac.uns.ftn.medDataShare.contract.ClinicalTrialContract;
 import rs.ac.uns.ftn.medDataShare.entity.ClinicalTrial;
-import rs.ac.uns.ftn.medDataShare.entity.ClinicalTrialAccessRequest;
 
-import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 public class ClinicalTrialCRUD {
@@ -20,7 +14,7 @@ public class ClinicalTrialCRUD {
     private String entityName;
     private Genson gensonSerializer;
 
-    private final static Logger LOG = Logger.getLogger(ClinicalTrialAccessRequestCRUD.class.getName());
+    private final static Logger LOG = Logger.getLogger(ClinicalTrialCRUD.class.getName());
 
     public ClinicalTrialCRUD(Context context, String entityName, Genson genson){
         this.ctx = context;
@@ -65,10 +59,12 @@ public class ClinicalTrialCRUD {
 
     public ClinicalTrial defineClinicalTrialAccess(
             String key,
-            String accessType
+            String accessType,
+            String updatedDataHash
     ) {
         ClinicalTrial clinicalTrial = getClinicalTrial(key);
         clinicalTrial.setAccessType(accessType);
+        clinicalTrial.setHashData(updatedDataHash);
 
         String dbKey = ctx.getStub().createCompositeKey(entityName, key).toString();
 

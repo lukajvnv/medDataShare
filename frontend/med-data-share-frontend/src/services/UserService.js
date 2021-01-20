@@ -58,6 +58,10 @@ export async function getClinicalTrialImage(binaryId) {
     return await requestFile(`/user/image/${binaryId}`);
 }
 
+export async function getClinicalTrial(clinicalTrialId, accessUserRole) {
+    return await request(`/user/clinicalTrial/${clinicalTrialId}?accessUserRole=${accessUserRole}`);
+}
+
 export async function sendAccessRequest(data) {
     return await request('/user/sendAccessRequest', data, HttpMethod.POST);
 }

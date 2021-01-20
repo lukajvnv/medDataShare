@@ -6,11 +6,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import rs.ac.uns.ftn.medDataShare.model.user.Admin;
-import rs.ac.uns.ftn.medDataShare.model.user.CommonUser;
-import rs.ac.uns.ftn.medDataShare.model.user.MedWorker;
 import rs.ac.uns.ftn.medDataShare.model.user.User;
-import rs.ac.uns.ftn.medDataShare.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Collection;

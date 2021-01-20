@@ -9,25 +9,17 @@ import rs.ac.uns.ftn.medDataShare.dto.form.MedWorkerForm;
 import rs.ac.uns.ftn.medDataShare.dto.medInstitution.ClinicalTrialDto;
 import rs.ac.uns.ftn.medDataShare.dto.user.CommonUserDto;
 import rs.ac.uns.ftn.medDataShare.dto.user.MedWorkerDto;
-import rs.ac.uns.ftn.medDataShare.security.service.UserDetailsServiceImpl;
 import rs.ac.uns.ftn.medDataShare.service.DoctorService;
 import rs.ac.uns.ftn.medDataShare.util.ValidationUtil;
 import rs.ac.uns.ftn.medDataShare.validator.ValidationException;
 
-import javax.imageio.ImageIO;
 import javax.validation.Valid;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/doctor")
 public class DoctorController {
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private DoctorService doctorService;
@@ -48,7 +40,7 @@ public class DoctorController {
     }
 
     @PostMapping("/clinicalTrial")
-    public ClinicalTrialDto addClinicalTrial(@Valid @ModelAttribute ClinicalTrialForm clinicalTrialForm, BindingResult result) throws IOException {
+    public ClinicalTrialDto addClinicalTrial(@Valid @ModelAttribute ClinicalTrialForm clinicalTrialForm, BindingResult result) throws Exception {
         if(result.hasErrors()){
             String errorMsg = ValidationUtil.formatValidationErrorMessages(result.getAllErrors());
             throw new ValidationException(errorMsg);

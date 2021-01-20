@@ -259,7 +259,8 @@ let strings = new LocalizedStrings({
                     until: 'Until',
                     institutions: 'Institutions',
                     orderBy: 'Order by',
-                    cancel: 'Cancel'
+                    cancel: 'Cancel',
+                    refresh: 'Refresh'
                 },
                 sendRequestSuccess: 'Your trial access request is successfully sent. To follow status of your access open TASKS under REQUESTED tab',
                 sendRequestError: 'Error while sending trial access request'
@@ -286,6 +287,7 @@ let strings = new LocalizedStrings({
                 back: 'Back',
                 decide: 'Decide',
                 get: 'Get',
+                noMatch: 'No data provided',
                 dateCreated: 'Date created: ',
                 clinicalTrialType: 'Clinical trial type: ',
                 requestInformation: 'Request information',
@@ -554,7 +556,7 @@ let strings = new LocalizedStrings({
                 time: 'Datum',
                 id: 'ID pregleda',
                 clinicalTrialType: 'Vrsta pregleda',
-                accessType: 'Načina pristupa',
+                accessType: 'Način pristupa',
                 image: 'Slika',
                 pdf: 'Pdf fajla',
                 institution: 'Medicinska ustanova',
@@ -600,7 +602,8 @@ let strings = new LocalizedStrings({
                     until: 'Do',
                     institutions: 'Medicinska ustanova',
                     orderBy: 'Sortiraj po',
-                    cancel: 'Poništi'
+                    cancel: 'Poništi',
+                    refresh: 'Osveži'
                 },
                 sendRequestSuccess: 'Uspešno poslat zahtev za pristup pregledu. Kako biste pratili status Vašeg zahteva otvoriti Zadaci, tab: Zahtevani pristup',
                 sendRequestError: 'Greška prilikom zahteva za pristup pregledu'
@@ -626,6 +629,7 @@ let strings = new LocalizedStrings({
                 detail: 'Detalji',
                 back: 'Nazad',
                 decide: 'Odlučite',
+                noMatch: 'Nema podataka',
                 get: 'Prikaži',
                 dateCreated: 'Datum kreiranja',
                 clinicalTrialType: 'Vrsta pregleda: ',
@@ -683,5 +687,5 @@ let strings = new LocalizedStrings({
     
 });
 
-// strings.setLanguage('rs');
+strings.setLanguage('rs');
 export default strings;

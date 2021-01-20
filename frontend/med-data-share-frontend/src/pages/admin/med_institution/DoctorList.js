@@ -46,16 +46,15 @@ class DoctorList extends TablePage {
                 return;
             }
 
-            const doctors = response.data;
+            const doctors = response.data.doctors;
             const doctorsTotal = doctors.length;
             
             this.setState({
                 tableData: doctors,
                 total: doctorsTotal,
                 lockTable: false,
-                medInstitutionName: doctorsTotal > 0 ? doctors[0].medInstitution.name : '',
-                medInstitutionId: doctorsTotal > 0 ? doctors[0].medInstitution.id : undefined,
-                showAdd: doctorsTotal > 0 ? true : false,
+                medInstitutionName: response.data.institution,
+                showAdd: true
             });
         });
     }
@@ -72,7 +71,6 @@ class DoctorList extends TablePage {
         return <AddDoctor 
                     onCancel={ this.onCancel } 
                     onFinish={ this.onFinish } 
-                    medInstitution={this.state.medInstitutionId}
                     medInstitutionName={this.state.medInstitutionName} />
     }
 

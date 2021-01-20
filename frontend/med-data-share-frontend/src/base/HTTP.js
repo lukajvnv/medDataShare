@@ -49,7 +49,7 @@ Axios.getInstance().interceptors.response.use(response => {
         history.push('/error');
     }
 
-    const { response: { status } } = error;
+    const { response: { status, data } } = error;
 
     if (status === 404) {
 
@@ -57,7 +57,11 @@ Axios.getInstance().interceptors.response.use(response => {
     }
     else if (status === 500) {
 
-        history.push('/error');
+        history.push({
+            pathname: '/error',
+            state   : { msg: `url:${data.callerUrl}, message'${data.message}'`}
+        });
+        // history.push('/error');
     }
     else if (status === 401) {
         const apiRequestUrl = error.config.url;

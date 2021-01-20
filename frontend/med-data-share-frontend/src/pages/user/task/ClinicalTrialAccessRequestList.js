@@ -27,6 +27,7 @@ class ClinicalTrialAccessList extends Page {
             clinicalTrials: [],
             data: props.data ? props.data : {},
             errors: {},
+            noMatchLabel: false
         }
 
         this.props.changeFullScreen(false);
@@ -43,7 +44,8 @@ class ClinicalTrialAccessList extends Page {
             }
             console.log(response);
             const trialAccessRequests = response.data;
-            this.setState({trialAccessRequests});            
+            const noMatchLabel = trialAccessRequests.length === 0 ? true : false;
+            this.setState({trialAccessRequests: trialAccessRequests, noMatchLabel: noMatchLabel});            
         })
         .catch(error => {
             console.log(error);
@@ -57,14 +59,16 @@ class ClinicalTrialAccessList extends Page {
                 clinicalTrialRequest: clinicalTrialRequest, 
                 requiredDecision: this.props.requiredDecision,
                 shouldDisplayTrial: this.props.shouldDisplayTrial,
+                currentTab: this.props.currentActiveTab,
+                requestType: this.props.requestType
             }
         });
     }
 
     renderAccessRequest(accessRequest){
         const id = accessRequest.id;
-        const title = "ClinicalTrialRequest" + id;
-        const message = "Lorem ipusm my ipsum rendere get lorem ipsum rendere"
+        const title = "ClinicalTrialRequest: " + id;
+        const message = `Date: ${this.renderColumnDate(accessRequest.time)}, ClinicalTrialType: ${accessRequest.clinicalTrialType}`
         return <Card 
                     key={id}
                     className="accessRequestItem"
@@ -109,6 +113,9 @@ class ClinicalTrialAccessList extends Page {
                 >
                     {
                         this.state.trialAccessRequests.map(trialAccessRequest => this.renderAccessRequest(trialAccessRequest))
+                    }
+                    {
+                        this.state.noMatchLabel && <h1>{strings.tasklist.trialAccessRequest.noMatch}</h1>
                     }
                     {/* <Card 
                         className="accessRequestItem"

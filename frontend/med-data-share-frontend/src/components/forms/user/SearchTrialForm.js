@@ -18,8 +18,8 @@ const clinicalTrialTypeDatasource = [
 ];
 
 const orderByDatasource = [
-    {key: 'latest', label: 'Order by latest'},
-    {key: 'oldest', label: 'Order by oldest'},
+    {key: 'desc', label: 'Order by latest'},
+    {key: 'asc', label: 'Order by oldest'},
 ];
 
 

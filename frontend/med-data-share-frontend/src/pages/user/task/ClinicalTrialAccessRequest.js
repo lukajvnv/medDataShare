@@ -7,7 +7,7 @@ import { withRouter } from "react-router-dom";
 import connect from "react-redux/es/connect/connect";
 import {withSnackbar} from "notistack";
 import Validators from "../../../constants/ValidatorTypes";
-import {trialAccessRequestDecision} from "../../../services/UserService";
+import {getClinicalTrial, trialAccessRequestDecision} from "../../../services/UserService";
 import {dateToString} from "../../../util/DateUtil";
 import moment from "moment";
 
@@ -23,9 +23,7 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import EditIcon from '@material-ui/icons/Edit';
 import GetAppIcon from '@material-ui/icons/GetApp';
-import TaskListPageState from '../../../constants/TaskListPageState';
 import AddClinicalTrialAccesDecision from '../clinical_trial/AddClinicalTrialAccessDecision';
-import AccessType from '../../../constants/AccessType';
 
 class ClinicalTrialAccessRequest extends Page {
 
@@ -42,7 +40,7 @@ class ClinicalTrialAccessRequest extends Page {
 
     trialAccessRequestDescription = [
         { key: 'id' },
-        // { key: 'time', transform: 'renderColumnDate' },
+        { key: 'time', transform: 'renderColumnDate' },
         { key: 'sender' },
         { key: 'receiver' },
         { key: 'clinicalTrialType' },
@@ -62,21 +60,23 @@ class ClinicalTrialAccessRequest extends Page {
     constructor(props) {
         super(props);
 
-        const clinicalTrial = {
-            id: "5f99d86e078a070d9c94e34c",
-            time: "2020-10-15T10:00:00.000+00:00",
-            introduction: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            relevantParameters: null,
-            conclusion: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-            clinicalTrialType: "CBC",
-            patient: "402881847570f569017570f5701d0002",
-            doctor: "402881847570f569017570f570cc0004",
-            accessType: "IDLE"
-        };
+        // const clinicalTrial = {
+        //     id: "5f99d86e078a070d9c94e34c",
+        //     time: "2020-10-15T10:00:00.000+00:00",
+        //     introduction: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+        //     relevantParameters: null,
+        //     conclusion: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+        //     clinicalTrialType: "CBC",
+        //     patient: "402881847570f569017570f5701d0002",
+        //     doctor: "402881847570f569017570f570cc0004",
+        //     accessType: "IDLE"
+        // };
 
         const clinicalTrialRequest = props.location.state.clinicalTrialRequest;
         const requiredDecision = props.location.state.requiredDecision;
         const shouldDisplayTrial = props.location.state.shouldDisplayTrial;
+        const currentTab = props.location.state.currentTab;
+        const requestType = props.location.state.requestType;
 
         const data = props.data ? props.data : {};
         const halfYearFuture = moment().add(3, 'month')
@@ -86,13 +86,16 @@ class ClinicalTrialAccessRequest extends Page {
         this.state = {
             displayDetailView: false,
             displayAccessRequestDecision: false,
-            selectedClinicalTrial: clinicalTrial,
+            selectedClinicalTrial: undefined,
             clinicalTrials: [],
             data: data,
             clinicalTrialRequest: clinicalTrialRequest ? clinicalTrialRequest : {},
             errors: {},
             requiredDecision: requiredDecision,
             shouldDisplayTrial: shouldDisplayTrial,
+            currentTab: currentTab,
+            displayProgress: false,
+            requestType: requestType
         }
 
         this.closeDetailView = this.closeDetailView.bind(this);
@@ -127,17 +130,22 @@ class ClinicalTrialAccessRequest extends Page {
         //     return;
         // }
 
+        this.setState({displayProgress: true});
+
         trialAccessRequestDecision(data)
         .then(response => {
             if(!response.ok){
+                this.setState({displayProgress: false});
                 return;
             }
             console.log(response);
             this.props.enqueueSnackbar(strings.tasklist.trialAccessRequest.form.decisionSuccess, { variant: 'success' });
+            this.setState({displayProgress: false});
             this.goBack();
         })
         .catch(error => {
             console.log(error);
+            this.setState({displayProgress: false});
         });
     }
 
@@ -151,13 +159,25 @@ class ClinicalTrialAccessRequest extends Page {
 
     openDetailView(){
         if(this.state.shouldDisplayTrial){
-            if(this.state.clinicalTrialRequest.accessDecision === AccessType.UNCONDITIONAL){
-                this.setState({displayDetailView: true});
+            let accessUserRole = '';
+            if(this.state.requestType === 'requested'){
+               accessUserRole = 'requester'; 
             } else {
-                this.props.enqueueSnackbar('You do not have permission to access!', { variant: 'error' });
+                accessUserRole = 'patient';
             }
-        } else {
-            this.setState({displayDetailView: true});
+
+            const resId = this.state.clinicalTrialRequest.id;
+            getClinicalTrial(resId, accessUserRole) 
+            .then(response => {
+                if(!response.ok){
+                    return;
+                }
+                console.log(response);
+                this.setState({displayDetailView: true, selectedClinicalTrial: response.data});
+            })
+            .catch(error => {
+                console.log(error);
+            });
         }
     }
 
@@ -165,7 +185,7 @@ class ClinicalTrialAccessRequest extends Page {
         // this.props.history.goBack();
         this.props.history.push({
             pathname: '/tasks',
-            state: {currentActiveTab: TaskListPageState.ClinicalTrialAccessRequest}
+            state: {currentActiveTab: this.state.currentTab}
         })
     }
 
@@ -268,7 +288,8 @@ class ClinicalTrialAccessRequest extends Page {
                             form={false}
                             submitLabel={strings.clinicalTrial.detail.ok}
                             displayResource={true}
-                        />
+                            displayPdfExportButton={true}
+                            />
                 }
                 {
                     this.state.displayAccessRequestDecision && 
@@ -280,9 +301,9 @@ class ClinicalTrialAccessRequest extends Page {
                             onSwitchChange={ this.onSwitchChange }
                             data={this.state.data}
                             errors={this.state.errors}
+                            displayProgress={this.state.displayProgress}
                         />
                 }
-                
             </div>
         );
     }

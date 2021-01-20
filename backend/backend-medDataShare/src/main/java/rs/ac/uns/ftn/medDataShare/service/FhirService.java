@@ -1,16 +1,14 @@
 package rs.ac.uns.ftn.medDataShare.service;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
-import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.utilities.xhtml.NodeType;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 import rs.ac.uns.ftn.medDataShare.converter.ClinicalTrialConverter;
 import rs.ac.uns.ftn.medDataShare.dto.form.ClinicalTrialForm;
 import rs.ac.uns.ftn.medDataShare.dto.form.EditClinicalTrialForm;
@@ -19,10 +17,8 @@ import rs.ac.uns.ftn.medDataShare.util.PdfExporter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FhirService {
@@ -32,10 +28,6 @@ public class FhirService {
 
     @Autowired
     private ClinicalTrialConverter clinicalTrialConverter;
-
-    public byte[] exportInPdf() {
-        return PdfExporter.clinicalTrialExportPdf("");
-    }
 
     public byte[] exportInPdf(String clinicalTrialId) {
         ClinicalTrialDto clinicalTrialDto = getImagingStudy(clinicalTrialId);
@@ -97,9 +89,9 @@ public class FhirService {
         }
     }
 
-    public ClinicalTrialDto addClinicalTrial(ClinicalTrialForm clinicalTrialForm){
+    public ClinicalTrialDto addClinicalTrial(ClinicalTrialForm clinicalTrialForm, String contentType, byte[] fileContent, Date date){
         try {
-            Binary binary = createBinary(clinicalTrialForm);
+            Binary binary = createBinary(contentType, fileContent);
 
             MethodOutcome binaryOutcome = fhirClient
                     .create()
@@ -110,7 +102,7 @@ public class FhirService {
             System.out.println("Resource is available at: " + idBinary.getValue());
             Binary receivedBinary = (Binary) binaryOutcome.getResource();
 
-            ImagingStudy imagingStudy = createImagingStudy(clinicalTrialForm, idBinary.getValue(), receivedBinary.getContentType());
+            ImagingStudy imagingStudy = createImagingStudy(clinicalTrialForm, idBinary.getValue(), receivedBinary.getContentType(), date);
             MethodOutcome imagingStudyOutcome = fhirClient
                     .create()
                     .resource(imagingStudy)
@@ -132,13 +124,17 @@ public class FhirService {
         return new ClinicalTrialDto();
     }
 
-    public ClinicalTrialDto updateClinicalTrial(EditClinicalTrialForm editClinicalTrialForm){
+    public ClinicalTrialDto updateClinicalTrial(String user, EditClinicalTrialForm editClinicalTrialForm) throws Exception {
         ImagingStudy imagingStudy = new ImagingStudy();
         ImagingStudy.ImagingStudyStatus imagingStudyStatus = clinicalTrialConverter.convertAccessType(editClinicalTrialForm.getAccessType());
         imagingStudy.setStatus(imagingStudyStatus);
 
+        AdditionalRequestHeadersInterceptor interceptor = new AdditionalRequestHeadersInterceptor();
+        interceptor.addHeaderValue("User-data", user);
+        fhirClient.registerInterceptor(interceptor);
+
         try {
-            MethodOutcome outcome = fhirClient
+            MethodOutcome imagingStudyOutcome = fhirClient
                     .update()
                     .resource(imagingStudy)
                     .withId(editClinicalTrialForm.getId())
@@ -146,14 +142,22 @@ public class FhirService {
                     .encodedXml()
                     .execute();
 
-            IdType id = (IdType) outcome.getId();
+            IdType id = (IdType) imagingStudyOutcome.getId();
             System.out.println("Resource is available at: " + id.getValue());
 
+            ImagingStudy receivedImagingStudy = (ImagingStudy) imagingStudyOutcome.getResource();
+            return clinicalTrialConverter.convertToDto(receivedImagingStudy);
         } catch (DataFormatException e) {
             System.out.println("An error occurred trying to upload:");
             e.printStackTrace();
+            formatExceptionMessage(e);
+        } catch(Exception e1) {
+            System.out.println(e1.getMessage());
+            formatExceptionMessage(e1);
+        } finally {
+            fhirClient.unregisterInterceptor(interceptor);
         }
-        return new ClinicalTrialDto();
+        return null;
     }
 
     public ClinicalTrialDto getImagingStudy(String imagingStudyId){
@@ -165,12 +169,11 @@ public class FhirService {
         return clinicalTrialConverter.convertToDto(imagingStudy);
     }
 
-    private Binary createBinary(ClinicalTrialForm clinicalTrialForm) throws IOException {
+    private Binary createBinary(String contentType, byte[] content) throws IOException {
         Binary binary = new Binary();
-        String contentType = clinicalTrialForm.getFile().getContentType();
         contentType = contentType.substring(contentType.indexOf("/") + 1);
         binary.setContentType(contentType);
-        binary.setContent(clinicalTrialForm.getFile().getBytes());
+        binary.setContent(content);
         return binary;
     }
 
@@ -189,7 +192,9 @@ public class FhirService {
         return new Binary();
     }
 
-    private ImagingStudy createImagingStudy(ClinicalTrialForm clinicalTrialForm, String binaryId, String contentType){
+    private ImagingStudy createImagingStudy(
+            ClinicalTrialForm clinicalTrialForm, String binaryId, String contentType, Date date
+    ){
         ImagingStudy imagingStudy = new ImagingStudy();
         Reference referenceLocation = new Reference(clinicalTrialForm.getDoctor());
         referenceLocation.setDisplay("display institution name");
@@ -199,7 +204,7 @@ public class FhirService {
         Reference referenceSubject = new Reference(clinicalTrialForm.getPatient());
         referenceSubject.setDisplay("display name: " + clinicalTrialForm.getPatient());
         imagingStudy.setSubject(referenceSubject);
-        imagingStudy.setStarted(new Date());
+        imagingStudy.setStarted(date);
         imagingStudy.addIdentifier()
                 .setSystem("http://ns.electronichealth.net.au/id/hi/ihi/1.0")
                 .setValue("id1");
@@ -213,7 +218,7 @@ public class FhirService {
         codingModality.setDisplay("trial type desc");
         codingModality.setCode(clinicalTrialForm.getClinicalTrialType().toString());
         codingModality.setSystem("system");
-        imagingStudy.setModality(new ArrayList<>(){{add(codingModality);}});
+        imagingStudy.setModality(new ArrayList<Coding>(){{add(codingModality);}});
         ImagingStudy.ImagingStudySeriesComponent component = new ImagingStudy.ImagingStudySeriesComponent();
         component.setNumber(1);
         Coding codingSeriesBody = new Coding();
@@ -221,7 +226,7 @@ public class FhirService {
         codingSeriesBody.setCode(binaryId);
         codingSeriesBody.setSystem("system");
         component.setBodySite(codingSeriesBody);
-        imagingStudy.setSeries(new ArrayList<>(){{add(component);}});
+        imagingStudy.setSeries(new ArrayList<ImagingStudy.ImagingStudySeriesComponent>(){{add(component);}});
 
         XhtmlNode xhtmlNode = new XhtmlNode(NodeType.Text, "desc");
         xhtmlNode.setContent("text content");
@@ -236,7 +241,13 @@ public class FhirService {
         procedureCode.setSystem("system");
         CodeableConcept c = new CodeableConcept(procedureCode);
         c.setText(clinicalTrialForm.getRelevantParameters());
-        imagingStudy.setProcedureCode(new ArrayList<>(){{add(c);}});
+        imagingStudy.setProcedureCode(new ArrayList<CodeableConcept>(){{add(c);}});
         return imagingStudy;
+    }
+
+    private void formatExceptionMessage(Exception e) throws Exception{
+        String msg= e.getMessage();
+        String errorMsg = msg.substring(msg.lastIndexOf(":")+1);
+        throw new Exception(errorMsg);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class MedDataShareBackendApplication {
 
 	public static void main(String[] args) {
+		System.setProperty("org.hyperledger.fabric.sdk.service_discovery.as_localhost", "true");
 		SpringApplication.run(MedDataShareBackendApplication.class, args);
 	}
 

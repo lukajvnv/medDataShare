@@ -1,6 +1,5 @@
 package rs.ac.uns.ftn.medDataShare.security.service;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,10 +62,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         }
 
         Admin admin = adminRepository.findByUsername(email);
-        if(admin != null){
-            return admin;
-        }
-        return null;
+        return admin;
     }
 
 

@@ -7,7 +7,7 @@ import strings from "../../../localization";
 import {
     Button, Paper, Slide, TextField,
     Dialog, DialogActions, DialogTitle, DialogContent,
-    InputLabel, Select, FormHelperText, FormControl, FormControlLabel, Switch
+    InputLabel, Select, FormHelperText, FormControl, FormControlLabel, Switch, LinearProgress
 } from "@material-ui/core";
 
 import AccessType from '../../../constants/AccessType';
@@ -21,14 +21,15 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="right" ref={ref} {...props} />;
 });
 
-const ClinicalTrialDetail = ({
+const AddClinicalTrialAccessDecision = ({
     shouldOpen,
     onClose,
     onSubmit,
     onChange,
     onSwitchChange,
     data,
-    errors
+    errors,
+    displayProgress
 }) => {
  
     return (
@@ -109,6 +110,10 @@ const ClinicalTrialDetail = ({
                     />
                 </Paper>
             </DialogContent>
+            {
+                displayProgress &&
+                    <LinearProgress color="secondary" />
+            }
             <DialogActions>
                 <Button onClick={onClose} color="secondary">
                     {strings.clinicalTrial.detail.close}
@@ -117,8 +122,12 @@ const ClinicalTrialDetail = ({
                     {strings.tasklist.trialAccessRequest.form.decision}
                 </Button>
             </DialogActions>
+            {
+                displayProgress &&
+                    <LinearProgress color="secondary" />
+            }
         </Dialog>
     );
 }
 
-export default ClinicalTrialDetail;
+export default AddClinicalTrialAccessDecision;

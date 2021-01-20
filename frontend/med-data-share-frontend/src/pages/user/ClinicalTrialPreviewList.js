@@ -30,6 +30,7 @@ class ClinicalTrialPreviewList extends Page {
         { key: 'clinicalTrialType', label: strings.clinicalTrial.detail.clinicalTrialType },
         { key: 'accessType', label: strings.clinicalTrial.detail.accessType },
         { key: 'institution', label: strings.clinicalTrial.detail.institution },
+        { key: 'patientId', label: strings.clinicalTrial.detail.patient },
     ];
 
     validationList = {
@@ -174,10 +175,14 @@ class ClinicalTrialPreviewList extends Page {
         
         const data = this.state.data;
         data['clinicalTrial'] = this.state.selectedClinicalTrial.clinicalTrial;
+        data['patient'] = this.state.selectedClinicalTrial.patientId;
+
+        this.setState({displayProgress: true});
 
         sendAccessRequest(data)
         .then(response => {
             if(!response.ok){
+                this.setState({displayProgress: false});
                 return;
             }
 
@@ -186,6 +191,7 @@ class ClinicalTrialPreviewList extends Page {
         })
         .catch(error => {
             console.log(error);
+            this.setState({displayProgress: false});
         });
     }
 
@@ -197,13 +203,14 @@ class ClinicalTrialPreviewList extends Page {
     }
     
     closeDetailView(){
-        this.setState({displayDetailView: false});
+        this.setState({displayDetailView: false, displayProgress: false});
     }
 
     renderClinicalTrialPreview(clinicalTrialPreview){
         const id = clinicalTrialPreview.clinicalTrial;
-        const title = "ClinicalTrialRequest" + id;
-        const message = "Lorem ipusm my ipsum rendere get lorem ipsum rendere";
+        const title = "ClinicalTrial: " + id;
+        const message = `Date: ${this.renderColumnDate(clinicalTrialPreview.time)}, ClinicalTrialType: ${clinicalTrialPreview.clinicalTrialType}`
+
         return <Card 
                     key={id}
                     className="accessRequestItem"
@@ -262,11 +269,6 @@ class ClinicalTrialPreviewList extends Page {
                         
                     </Grid>   
                     <Grid item xs={6} md={9} className="trialsPreviewContainer">
-                        {/* {
-                            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(clinicalTrialPreview => 
-                                this.renderClinicalTrialPreview(clinicalTrialPreview)
-                            )
-                        } */}
                         {
                             this.state.clinicalTrialPreviewList.map(clinicalTrialPreview => 
                                 this.renderClinicalTrialPreview(clinicalTrialPreview)
@@ -282,7 +284,8 @@ class ClinicalTrialPreviewList extends Page {
                                     attributesDescription={this.clinicalTrialPreviewDescription}
                                     form={false}
                                     submitLabel={strings.tasklist.trialAccessRequest.sendRequest}
-                                    
+                                    displayProgress={this.state.displayProgress}
+                                    displayPdfExportButton={false}
                                     displayResource={false}
                                 />
                         }

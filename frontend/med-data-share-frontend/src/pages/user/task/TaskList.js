@@ -93,8 +93,9 @@ export class TaskList extends Page {
                     <ClinicalTrialAccessRequestList 
                         pageTitle={strings.tasklist.trialAccessRequest.pageTitle}
                         requiredDecision={true}
-                        shouldDisplayTrial={false}
+                        shouldDisplayTrial={true}
                         requestType={"requests"}
+                        currentActiveTab={this.state.currentActiveTab}
                     />    
                 }
                 {
@@ -102,8 +103,9 @@ export class TaskList extends Page {
                     <ClinicalTrialAccessRequestList 
                         pageTitle={strings.tasklist.trialAccessHistory.pageTitle}
                         requiredDecision={false}
-                        shouldDisplayTrial={false}
+                        shouldDisplayTrial={true}
                         requestType={"history"}
+                        currentActiveTab={this.state.currentActiveTab}
                     />   
                 }
                 {
@@ -113,6 +115,7 @@ export class TaskList extends Page {
                         requiredDecision={false}
                         shouldDisplayTrial={true}
                         requestType={"requested"}
+                        currentActiveTab={this.state.currentActiveTab}
                     />   
                 }
                 </Box>

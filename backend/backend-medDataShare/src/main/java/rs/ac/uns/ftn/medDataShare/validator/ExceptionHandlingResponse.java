@@ -1,6 +1,5 @@
 package rs.ac.uns.ftn.medDataShare.validator;
 
-
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,15 +48,10 @@ public class ExceptionHandlingResponse {
         return error;
     }
 
-
-
     @Data
     private static class Response {
-
         private String message;
-
         private String table;
         private String callerUrl;
-
     }
 }

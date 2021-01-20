@@ -15,9 +15,19 @@
 	<description>Medical Data Share backend project using Spring Boot</description>
 
 	<properties>
-		<java.version>11</java.version>
+<!--		<maven.compiler.target>1.8</maven.compiler.target>-->
+<!--		<maven.compiler.source>1.8</maven.compiler.source>-->
+<!--		<java.version>8</java.version>-->
 		<happi_fhir_version>5.1.0</happi_fhir_version>
+		<hyperledger_fabric_gateway.version>2.1.1</hyperledger_fabric_gateway.version>
 	</properties>
+
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -54,6 +64,18 @@
 			<version>0.9.1</version>
 		</dependency>
 
+		<!-- Hyperledger-fabric -->
+		<dependency>
+			<groupId>org.hyperledger.fabric</groupId>
+			<artifactId>fabric-gateway-java</artifactId>
+			<version>${hyperledger_fabric_gateway.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180813</version>
+		</dependency>
+
 		<!-- Database -->
 		<dependency>
 			<groupId>mysql</groupId>
@@ -73,7 +95,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -99,11 +120,11 @@
 			<artifactId>itextpdf</artifactId>
 			<version>5.5.10</version>
 		</dependency>
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.56</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.bouncycastle</groupId>-->
+<!--			<artifactId>bcprov-jdk15on</artifactId>-->
+<!--			<version>1.56</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -124,6 +145,15 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+<!--			<plugin>-->
+<!--				<groupId>org.apache.maven.plugins</groupId>-->
+<!--				<artifactId>maven-compiler-plugin</artifactId>-->
+<!--				<version>3.8.1</version>-->
+<!--				<configuration>-->
+<!--					<source>8</source>-->
+<!--					<target>8</target>-->
+<!--				</configuration>-->
+<!--			</plugin>-->
 		</plugins>
 	</build>
 

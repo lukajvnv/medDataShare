@@ -8,20 +8,19 @@ import {getError, hasError} from "../../../functions/Validation";
 import strings from "../../../localization";
 
 import rtg from '../../../assets/rtg.jpg';
-import pdfFile from '../../../assets/trial.pdf'; 
 
 import {
     Button, Paper, Slide,
     Typography, Box, 
     Accordion, AccordionDetails, AccordionSummary,
     Dialog, DialogActions, DialogTitle, DialogContent,
-    InputLabel, Select, FormHelperText, FormControl
+    InputLabel, Select, FormHelperText, FormControl, LinearProgress
 } from "@material-ui/core";
+
 
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 
-import PdfLoader from '../../../components/PdfLoader';
 import AccessType from '../../../constants/AccessType';
 
 import { getClinicalTrialInPdf, getClinicalTrialImage } from '../../../services/UserService';
@@ -91,11 +90,13 @@ const ClinicalTrialDetail = ({
     form,
     errors,
     submitLabel,
-    displayResource
+    displayResource,
+    displayProgress,
+    displayPdfExportButton
 }) => {
     const classes = useStyles();
     const [imageExpanded, setImageExpanded] = React.useState(false);
-    const [pdfExpanded, setPdfExpanded] = React.useState(false);
+    // const [pdfExpanded, setPdfExpanded] = React.useState(false);
     const [img, setImg] = React.useState(undefined);
 
     const exportPdf = () => {
@@ -224,7 +225,7 @@ const ClinicalTrialDetail = ({
                     </Accordion>
                 </Box>
             }
-            {
+            {/* {
                 displayResource && <Box mb={1}>
                                     <Accordion expanded={pdfExpanded} onChange={() => setPdfExpanded(!pdfExpanded)}>
                                         <AccordionSummary
@@ -248,23 +249,34 @@ const ClinicalTrialDetail = ({
                                         </AccordionDetails>
                                     </Accordion>
                                 </Box>
-            }
+            } */}
             </DialogContent>
+            {
+                displayProgress &&
+                    <LinearProgress color="secondary" />
+            }
             <DialogActions>
                 <Button onClick={onClose} color="secondary">
                     {strings.clinicalTrial.detail.close}
                 </Button>
-                <Button 
-                    color="default" 
-                    startIcon={<ImportExportIcon />}
-                    onClick={exportPdf}
+                {
+                    displayPdfExportButton && <Button 
+                        color="default" 
+                        startIcon={<ImportExportIcon />}
+                        onClick={exportPdf}
                     >
-                    {strings.clinicalTrial.detail.export}
-                </Button>
+                        {strings.clinicalTrial.detail.export}
+                    </Button>
+                }
+                
                 <Button onClick={onSubmit} color="primary">
                     {submitLabel}
                 </Button>
             </DialogActions>
+            {
+                displayProgress &&
+                    <LinearProgress color="secondary" />
+            }
         </Dialog>
     );
 }

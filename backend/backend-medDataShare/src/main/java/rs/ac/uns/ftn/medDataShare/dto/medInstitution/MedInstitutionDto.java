@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 public class MedInstitutionDto {
 
     private String id;
+    private String membershipOrganizationId;
 
     @NotBlank
     private String name;

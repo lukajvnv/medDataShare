@@ -42,7 +42,7 @@ public class CommonUserController {
     }
 
     @PostMapping("/clinicalTrial")
-    public ClinicalTrialDto updateClinicalTrial(@Valid @RequestBody EditClinicalTrialForm editClinicalTrialForm, BindingResult result){
+    public ClinicalTrialDto updateClinicalTrial(@Valid @RequestBody EditClinicalTrialForm editClinicalTrialForm, BindingResult result) throws Exception {
         if(result.hasErrors()){
             String errorMsg = ValidationUtil.formatValidationErrorMessages(result.getAllErrors());
             throw new ValidationException(errorMsg);

@@ -3,6 +3,8 @@
     "fields": [
       {
         "time": "desc"
+      }, {
+        "entityName": "desc"
       }
     ]
   },

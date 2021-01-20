@@ -22,4 +22,10 @@ public class ClinicalTrialPreviewDto {
 
     private String institution;
 
+    private String patientId;
+
+    //relevant parameters
+    //doctorId
+    //patientId
+
 }

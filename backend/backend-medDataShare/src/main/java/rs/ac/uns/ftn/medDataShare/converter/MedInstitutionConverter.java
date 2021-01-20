@@ -2,9 +2,12 @@ package rs.ac.uns.ftn.medDataShare.converter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import rs.ac.uns.ftn.medDataShare.chaincode.Config;
+import rs.ac.uns.ftn.medDataShare.converter.declaration.ConverterInterface;
 import rs.ac.uns.ftn.medDataShare.dto.medInstitution.MedInstitutionDto;
 import rs.ac.uns.ftn.medDataShare.model.medInstitution.MedInstitution;
 import rs.ac.uns.ftn.medDataShare.repository.MedInstitutionRepository;
+import rs.ac.uns.ftn.medDataShare.util.StringUtil;
 
 @Component
 public class MedInstitutionConverter implements ConverterInterface<MedInstitution, MedInstitutionDto, MedInstitutionDto> {
@@ -17,7 +20,8 @@ public class MedInstitutionConverter implements ConverterInterface<MedInstitutio
         return new MedInstitutionDto(
                 medInstitution.getId(),
                 medInstitution.getName(),
-                medInstitution.getAddress());
+                medInstitution.getAddress(),
+                medInstitution.getMembershipOrganizationId());
     }
 
     @Override
@@ -25,9 +29,11 @@ public class MedInstitutionConverter implements ConverterInterface<MedInstitutio
         if(update){
             return medInstitutionRepository.getOne(medInstitutionDto.getId());
         }
+        String membershipOrganizationId = StringUtil.generateMembershipOrganizationId(Config.ORG_COUNT);
         return new MedInstitution(
                 medInstitutionDto.getId(),
                 medInstitutionDto.getName(),
-                medInstitutionDto.getAddress());
+                medInstitutionDto.getAddress(),
+                membershipOrganizationId);
     }
 }

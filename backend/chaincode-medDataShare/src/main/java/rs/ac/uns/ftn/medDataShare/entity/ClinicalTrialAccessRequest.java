@@ -43,6 +43,9 @@ public class ClinicalTrialAccessRequest {
     private String clinicalTrial;
 
     @Property()
+    private String clinicalTrialType;
+
+    @Property()
     private String entityName;
 
     public String getKey() {
@@ -135,6 +138,15 @@ public class ClinicalTrialAccessRequest {
         return this;
     }
 
+    public String getClinicalTrialType() {
+        return clinicalTrialType;
+    }
+
+    public ClinicalTrialAccessRequest setClinicalTrialType(String clinicalTrialType) {
+        this.clinicalTrialType = clinicalTrialType;
+        return this;
+    }
+
     public static byte[] serialize(Object object){
         String jsonStr = new JSONObject(object).toString();
         return jsonStr.getBytes(UTF_8);
@@ -160,6 +172,7 @@ public class ClinicalTrialAccessRequest {
 //        ClinicalTrial clinicalTrial = ClinicalTrial.parseClinicalTrial(clinicalTrialJsonObject);
 
         String clinicalTrialJsonObject = jsonObject.getString("clinicalTrial");
+        String clinicalTrialType = jsonObject.getString("clinicalTrialType");
 
         return createInstance(
                 key,
@@ -170,7 +183,8 @@ public class ClinicalTrialAccessRequest {
                 accessAvailableFrom,
                 accessAvailableUntil,
                 anonymity,
-                clinicalTrialJsonObject
+                clinicalTrialJsonObject,
+                clinicalTrialType
         );
     }
 
@@ -198,7 +212,8 @@ public class ClinicalTrialAccessRequest {
             String accessAvailableFrom,
             String accessAvailableUntil,
             boolean anonymity,
-            String clinicalTrial
+            String clinicalTrial,
+            String clinicalTrialType
     ){
         return new ClinicalTrialAccessRequest()
                 .setKey(key)
@@ -210,6 +225,7 @@ public class ClinicalTrialAccessRequest {
                 .setAccessAvailableUntil(accessAvailableUntil)
                 .setAnonymity(anonymity)
                 .setClinicalTrial(clinicalTrial)
+                .setClinicalTrialType(clinicalTrialType)
                 .setEntityName(ClinicalTrialAccessRequest.class.getSimpleName())
                 ;
     }

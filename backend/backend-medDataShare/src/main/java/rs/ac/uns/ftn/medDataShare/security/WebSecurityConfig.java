@@ -60,19 +60,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
                 authorizeRequests()
-                .antMatchers(Constants.TEST_API).permitAll()
-                .antMatchers(Constants.TEST_VALID_API).permitAll()
                 .antMatchers(Constants.AUTH_API).permitAll()
 
-//                .antMatchers(Constants.SUPER_ADMIN_API).hasAuthority(Constants.ROLE_SUPER_ADMIN)
-//                .antMatchers(Constants.MED_ADMIN_API).hasAuthority(Constants.ROLE_MED_ADMIN)
-//                .antMatchers(Constants.DOCTOR_API).hasAuthority(Constants.ROLE_DOCTOR)
+                .antMatchers(Constants.SUPER_ADMIN_API).hasAuthority(Constants.ROLE_SUPER_ADMIN)
+                .antMatchers(Constants.MED_ADMIN_API).hasAuthority(Constants.ROLE_MED_ADMIN)
+                .antMatchers(Constants.DOCTOR_API).hasAuthority(Constants.ROLE_DOCTOR)
                 .antMatchers(Constants.COMMON_USER_API).hasAuthority(Constants.ROLE_COMMON_USER)
-                .antMatchers(Constants.SUPER_ADMIN_API).permitAll()
-                .antMatchers(Constants.MED_ADMIN_API).permitAll()
-                .antMatchers(Constants.DOCTOR_API).permitAll()
-                .antMatchers(Constants.USER_API).permitAll()
-//                .antMatchers(Constants.COMMON_USER_API).permitAll()
+                .antMatchers(Constants.USER_API).hasAnyAuthority(Constants.ROLE_COMMON_USER, Constants.ROLE_DOCTOR, Constants.ROLE_MED_ADMIN, Constants.ROLE_SUPER_ADMIN)
 
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(unauthorizedHandler)

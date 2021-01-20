@@ -9,7 +9,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Component;
 import rs.ac.uns.ftn.fhir.fhir_server.converter.ImagingStudyConverter;
-import rs.ac.uns.ftn.fhir.fhir_server.entity.PatientEntity;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,36 +24,18 @@ public class InitDataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        initPatients();
-        initPdf();
+//        anonymity();
+//        TestPatientApplication.createBinary();
 //        initClinicalTrial();
     }
 
-    private void initPatients(){
-        PatientEntity patientEntity = new PatientEntity();
-        patientEntity.setDateOfBirth(new Date());
-//        mongo.save(patientEntity);
-    }
-
-    private void initPdf(){
-        try {
-//            PdfExporter.export();
-//            PdfExporter.encrypt();
-//            byte[] bytes = PdfExporter.getBytes();
-//            PdfExporter.deleteFile();
-        }
-//        catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (DocumentException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        } catch (URISyntaxException e) {
-//            e.printStackTrace();
-//        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+    private void anonymity(){
+        String textBefore = "lorem ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
+//        System.out.println("textBefore: " + textBefore);
+        String textAfter = textBefore.replaceAll("(?i)lorem", "X");
+        String w = "(?i)" + "ipsum";
+        textAfter = textAfter.replaceAll(w, "Y");
+        System.out.println("textAfter: " + textAfter);
     }
 
     private void initClinicalTrial(){

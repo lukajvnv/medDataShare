@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.medDataShare.converter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import rs.ac.uns.ftn.medDataShare.converter.declaration.ConverterInterface;
 import rs.ac.uns.ftn.medDataShare.dto.user.CommonUserDto;
 import rs.ac.uns.ftn.medDataShare.model.user.CommonUser;
 import rs.ac.uns.ftn.medDataShare.repository.CommonUserRepository;

@@ -1,0 +1,10 @@
+{
+  "index": {
+    "fields": [
+        "entityName", "offlineDataUrl"
+    ]
+  },
+  "ddoc": "indexClinicalTrialOfflineDataUrlDoc",
+  "name": "indexClinicalTrialOfflineDataUrl",
+  "type": "json"
+}

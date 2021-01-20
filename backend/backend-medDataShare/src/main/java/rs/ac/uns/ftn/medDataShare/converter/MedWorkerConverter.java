@@ -2,6 +2,7 @@ package rs.ac.uns.ftn.medDataShare.converter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import rs.ac.uns.ftn.medDataShare.converter.declaration.ConverterInterface;
 import rs.ac.uns.ftn.medDataShare.dto.medInstitution.MedInstitutionDto;
 import rs.ac.uns.ftn.medDataShare.dto.form.MedWorkerForm;
 import rs.ac.uns.ftn.medDataShare.dto.user.MedWorkerDto;
@@ -37,7 +38,9 @@ public class MedWorkerConverter implements ConverterInterface<MedWorker, MedWork
                 .medInstitution( new MedInstitutionDto(
                                         medInstitution.getId(),
                                         medInstitution.getName(),
-                                        medInstitution.getAddress()))
+                                        medInstitution.getAddress(),
+                                        medInstitution.getMembershipOrganizationId()
+                        ))
                 .build();
     }
 

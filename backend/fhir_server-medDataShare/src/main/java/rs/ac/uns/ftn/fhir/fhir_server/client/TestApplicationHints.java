@@ -5,15 +5,14 @@ import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
+import ca.uhn.fhir.rest.client.interceptor.BearerTokenAuthInterceptor;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
-import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.instance.model.api.IIdType;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.utilities.xhtml.NodeType;
 import org.hl7.fhir.utilities.xhtml.XhtmlNode;
-import rs.ac.uns.ftn.fhir.fhir_server.interceptor.CustomClientAdapterInterceptor;
-import rs.ac.uns.ftn.fhir.fhir_server.interceptor.CustomClientInterceptor;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -28,11 +27,12 @@ public class TestApplicationHints {
 //	private static String serveFHIRApi = "http://127.0.0.1:8183/STU3";
 
 	public static void main(String[] args) {
-//		update();
-//		createImagingStudy();
-//		getImaginStudy();
+		String imagingStudyId = createImagingStudy();
+		getImagingStudy(imagingStudyId);
+//		String imagingStudyId = "5ffc5d09d2a2585e7bb39032";
+//		updateImagingStudy(imagingStudyId);
 //		searchImagingStudy();
-		updateImagingStudy();
+		//		update();
 //		get();
 //		step1_read_a_resource();
 //		step2_search_for_patients_named_test();
@@ -69,7 +69,7 @@ public class TestApplicationHints {
 		}
 	}
 
-	public static void createImagingStudy(){
+	public static String createImagingStudy(){
 		FhirContext ctx = FhirContext.forR4();
 		ctx.getRestfulClientFactory().setConnectTimeout(60 * 1000);
 		ctx.getRestfulClientFactory().setSocketTimeout(60 * 1000);
@@ -124,8 +124,12 @@ public class TestApplicationHints {
 		CodeableConcept c = new CodeableConcept(procedureCode);
 		c.setText("babababa");
 		imagingStudy.setProcedureCode(new ArrayList<>(){{add(c);}});
-//		imagingStudy.setReasonCode();
+
+		BearerTokenAuthInterceptor bearerTokenAuthInterceptor = new BearerTokenAuthInterceptor();
+
+		//		imagingStudy.setReasonCode();
 //		imagingStudy.setEndpoint();
+
 		try {
 			MethodOutcome outcome = client
 					.create()
@@ -146,21 +150,26 @@ public class TestApplicationHints {
 
 //			String string = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(patient);
 //			System.out.println(string);
+			return id.getValue();
 		} catch (DataFormatException e) {
 			System.out.println("An error occurred trying to upload:");
 			e.printStackTrace();
+			return null;
 		}
 
 
 
 	}
 
-	public static void updateImagingStudy(){
+	public static void updateImagingStudy(String idValue){
 		FhirContext ctx = FhirContext.forR4();
 		ctx.getRestfulClientFactory().setConnectTimeout(60 * 1000);
 		ctx.getRestfulClientFactory().setSocketTimeout(60 * 1000);
 
 		IGenericClient client = ctx.newRestfulGenericClient(serveFHIRApi);
+		AdditionalRequestHeadersInterceptor interceptor = new AdditionalRequestHeadersInterceptor();
+		interceptor.addHeaderValue("User-data", "fjdlkfdljfdlksjfdslj");
+		client.registerInterceptor(interceptor);
 
 		ImagingStudy imagingStudy = new ImagingStudy();
 		imagingStudy.setStatus(ImagingStudy.ImagingStudyStatus.CANCELLED);   //REGISTERED(idle), AVAILABLE(unconditional), CANCELLED(forbidden), ENTEREDINERROR, UNKNOWN, NULL;
@@ -169,7 +178,7 @@ public class TestApplicationHints {
 			MethodOutcome outcome = client
 					.update()
 					.resource(imagingStudy)
-					.withId("5fabd6114637ff20a9a7dfb3")
+					.withId(idValue)
 					.prettyPrint()
 					.encodedXml()
 					.execute();
@@ -186,6 +195,10 @@ public class TestApplicationHints {
 		} catch (DataFormatException e) {
 			System.out.println("An error occurred trying to upload:");
 			e.printStackTrace();
+		} catch(Exception e1) {
+			System.out.println(e1.getMessage());
+		} finally {
+			client.unregisterInterceptor(interceptor);
 		}
 
 
@@ -200,8 +213,6 @@ public class TestApplicationHints {
 		// Create a client
 		IGenericClient client = ctx.newRestfulGenericClient(serveFHIRApi);
 		// pri svakom pozivu servera se poziva interceptRequest pa interceptResponse
-		client.registerInterceptor(new CustomClientInterceptor());
-		client.registerInterceptor(new CustomClientAdapterInterceptor());
 		// Read a patient with the given ID
 		Patient patient = client.read().resource(Patient.class).withId("5fa9a1468cc0be50ab6601b8").execute();
 
@@ -210,17 +221,15 @@ public class TestApplicationHints {
 		System.out.println(string);
 	}
 
-	public static void getImaginStudy(){
+	public static void getImagingStudy(String id){
 		// Create a context
 		FhirContext ctx = FhirContext.forR4();
 
 		// Create a client
 		IGenericClient client = ctx.newRestfulGenericClient(serveFHIRApi);
 		// pri svakom pozivu servera se poziva interceptRequest pa interceptResponse
-		client.registerInterceptor(new CustomClientInterceptor());
-		client.registerInterceptor(new CustomClientAdapterInterceptor());
 		// Read a patient with the given ID
-		ImagingStudy imagingStudy = client.read().resource(ImagingStudy.class).withId("5faa9199b6080d7b665f2c27").execute();
+		ImagingStudy imagingStudy = client.read().resource(ImagingStudy.class).withId(id).execute();
 
 		// Print the output
 		String string = ctx.newJsonParser().setPrettyPrint(true).encodeResourceToString(imagingStudy);

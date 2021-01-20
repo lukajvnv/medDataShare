@@ -89,6 +89,7 @@ class ClinicalTrialDefineAccess extends Page {
             clinicalTrials: [],
             data: props.data ? props.data : {},
             errors: {},
+            displayProgress: false
         }
 
         this.props.changeFullScreen(false);
@@ -138,18 +139,22 @@ class ClinicalTrialDefineAccess extends Page {
         const data = this.state.data;
         data['id'] = this.state.selectedClinicalTrial.id;
 
+        this.setState({displayProgress: true});
+
         editClinicalTrial(data)
         .then(response => {
             if(!response.ok){
+                this.setState({displayProgress: false});
                 return;
             }
             console.log(response);
             this.props.enqueueSnackbar(strings.tasklist.trialDefineAccess.defineAccessSuccess, { variant: 'success' });
-            this.setState({displayDetailView: false});
+            this.setState({displayDetailView: false, displayProgress: false});
             this.fetchData();
         })
         .catch(error => {
             console.log(error);
+            this.setState({displayProgress: false});
         });
     }
 
@@ -190,7 +195,8 @@ class ClinicalTrialDefineAccess extends Page {
                             errors={this.state.errors}
                             submitLabel={strings.tasklist.trialDefineAccess.submit}
                             displayResource={true}
-
+                            displayPdfExportButton={true}
+                            displayProgress={this.state.displayProgress}
                         />
                 }
             </div>

@@ -1,12 +1,9 @@
 package rs.ac.uns.ftn.medDataShare.dto.form;
 
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.Date;
 
 @Getter
 public class ResetPasswordForm {

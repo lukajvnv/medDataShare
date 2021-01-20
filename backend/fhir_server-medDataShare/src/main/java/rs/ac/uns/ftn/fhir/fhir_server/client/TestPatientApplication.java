@@ -3,12 +3,13 @@ package rs.ac.uns.ftn.fhir.fhir_server.client;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.DataFormatException;
 import ca.uhn.fhir.parser.IParser;
+import ca.uhn.fhir.parser.StrictErrorHandler;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.LoggingInterceptor;
 import org.hl7.fhir.r4.model.*;
 import rs.ac.uns.ftn.fhir.fhir_server.util.ImageUtil;
-import rs.ac.uns.ftn.fhir.fhir_server.util.PdfExporter;
 
 import java.io.IOException;
 
@@ -28,6 +29,7 @@ public class TestPatientApplication {
       try {
 //         init();
 //         createPatient();
+//         updatePatient();
 //         search();
 //         runOperation();
          createBinary();
@@ -38,7 +40,7 @@ public class TestPatientApplication {
       }
    }
 
-   private static void createBinary() throws IOException {
+   public static void createBinary() throws IOException {
       FhirContext ctx = FhirContext.forR4();
 
       ctx.getRestfulClientFactory().setConnectTimeout(60 * 1000);
@@ -68,6 +70,9 @@ public class TestPatientApplication {
       } catch (DataFormatException e) {
          System.out.println("An error occurred trying to upload:");
          e.printStackTrace();
+      } catch (Exception e1) {
+         System.out.println("An error occurred trying to upload:");
+         e1.printStackTrace();
       }
    }
 
@@ -112,8 +117,6 @@ public class TestPatientApplication {
               .setSystem("http://ns.electronichealth.net.au/id/hi/ihi/1.0")
               .setValue("8003608166690503");
 
-      System.out.println("Press Enter to serialise Resource to the console as XML.");
-      System.in.read();
 
       // create a new XML parser and serialize our Patient object with it
       String encoded = ctx.newXmlParser().setPrettyPrint(true)
@@ -121,8 +124,6 @@ public class TestPatientApplication {
 
       System.out.println(encoded);
 
-      System.out.println("Press Enter to end.");
-      System.in.read();
    }
 
    private static void createPatient() throws IOException {
@@ -150,13 +151,15 @@ public class TestPatientApplication {
       // create the RESTful client to work with our FHIR server
       // see http://hapifhir.io/doc_rest_client.html
       IGenericClient client = ctx.newRestfulGenericClient(serveFHIRApi);
+      AdditionalRequestHeadersInterceptor interceptor = new AdditionalRequestHeadersInterceptor();
+      interceptor.addHeaderValue("User-data", "dataU");
+      client.registerInterceptor(interceptor);
 
       try {
          // send our resource up - result will be stored in 'outcome'
          // see http://hapifhir.io/doc_rest_client.html#Create_-_Type
          MethodOutcome outcome = client
                  .create()
-//                 .update()
                  .resource(ourPatient)
                  .prettyPrint()   //!!!!!!!!!!!!!!!!!!!!!1
                  .encodedXml()    //!!!!!!!!!!!!!!!!!!!!!1
@@ -175,10 +178,74 @@ public class TestPatientApplication {
       } catch (DataFormatException e) {
          System.out.println("An error occurred trying to upload:");
          e.printStackTrace();
+      } catch (Exception e1) {
+            System.out.println("An error occurred trying to upload:");
+            e1.printStackTrace();
+      } finally {
+         client.unregisterInterceptor(interceptor);
       }
 
-      System.out.println("Press Enter to end.");
-      System.in.read();
+   }
+
+   private static void updatePatient() throws IOException {
+      FhirContext ctx = FhirContext.forR4();
+
+      Patient ourPatient = new Patient();
+
+      // you can use the Fluent API to chain calls
+      // see http://hapifhir.io/doc_fhirobjects.html
+      ourPatient
+              .addName()
+              .setUse(HumanName.NameUse.OFFICIAL)
+              .addPrefix("Mr")
+              .setFamily("Fhirman")
+              .addGiven("Sam");
+      ourPatient.addIdentifier()
+              .setSystem("http://ns.electronichealth.net.au/id/hi/ihi/1.0")
+              .setValue("8003608166690503");
+
+      // increase timeouts since the server might be powered down
+      // see http://hapifhir.io/doc_rest_client_http_config.html
+      ctx.getRestfulClientFactory().setConnectTimeout(60 * 1000);
+      ctx.getRestfulClientFactory().setSocketTimeout(60 * 1000);
+
+      // create the RESTful client to work with our FHIR server
+      // see http://hapifhir.io/doc_rest_client.html
+      IGenericClient client = ctx.newRestfulGenericClient(serveFHIRApi);
+      AdditionalRequestHeadersInterceptor interceptor = new AdditionalRequestHeadersInterceptor();
+      interceptor.addHeaderValue("User-data", "dataU");
+      client.registerInterceptor(interceptor);
+
+      String updateId = "5ffd8200e5a1ad31970e2f09";
+
+      try {
+         // send our resource up - result will be stored in 'outcome'
+         // see http://hapifhir.io/doc_rest_client.html#Create_-_Type
+         MethodOutcome outcome = client
+                 .update()
+                 .resource(ourPatient)
+                 .withId(updateId)
+                 .prettyPrint()   //!!!!!!!!!!!!!!!!!!!!!1
+                 .encodedXml()    //!!!!!!!!!!!!!!!!!!!!!1
+                 .execute();
+
+         IdType id = (IdType) outcome.getId();
+         System.out.println("Resource is available at: " + id.getValue());
+
+         IParser xmlParser = ctx.newXmlParser().setPrettyPrint(true);
+//         xmlParser.setParserErrorHandler(new StrictErrorHandler());
+         Patient receivedPatient = (Patient) outcome.getResource();
+         System.out.println("This is what we sent up: \n"
+                 + xmlParser.encodeResourceToString(ourPatient)
+                 + "\n\nThis is what we received: \n"
+                 + xmlParser.encodeResourceToString(receivedPatient));
+      } catch (DataFormatException e) {
+         System.out.println("An error occurred trying to upload:");
+         e.printStackTrace();
+      } finally {
+         client.unregisterInterceptor(interceptor);
+      }
+
    }
 
    private static void search() throws IOException{
@@ -195,8 +262,7 @@ public class TestPatientApplication {
       // see http://hapifhir.io/doc_rest_client.html
       IGenericClient client = ctx.newRestfulGenericClient(serveFHIRApi);
 
-      System.out.println("Press Enter to send to server: " + serveFHIRApi);
-      System.in.read();
+
 
       try {
          // perform a search for Patients with last name 'Fhirman'
@@ -221,8 +287,7 @@ public class TestPatientApplication {
          e.printStackTrace();
       }
 
-      System.out.println("Press Enter to end.");
-      System.in.read();
+
    }
 
    private static void runOperation() throws IOException{
@@ -241,12 +306,9 @@ public class TestPatientApplication {
       IGenericClient client = ctx.newRestfulGenericClient(serveFHIRApi);
 
       client.registerInterceptor(new LoggingInterceptor(true));
-      System.out.println("Press Enter to send to server: " + serveFHIRApi);
-
-      System.in.read();
 
       try {
-         String patientId = "1124683";
+         String patientId = "5ffd7fc5935e485a20b0acee";
          // Invoke $everything on our Patient
          // See http://hapifhir.io/doc_rest_client.html#Extended_Operations
          Parameters inParams = new Parameters();
@@ -284,8 +346,6 @@ public class TestPatientApplication {
          e.printStackTrace();
       }
 
-      System.out.println("Press Enter to end.");
-      System.in.read();
    }
 
    private static void runTestOperation() throws IOException{

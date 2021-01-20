@@ -17,6 +17,7 @@ import { addClinicalTrial } from '../../services/DoctorService';
 import AddClinicalTrialForm from '../../components/forms/doctor/AddClinicalTrialForm';
 import FindPatientAutocomplete from './FindPatientAutocomplete';
 import {getPatients} from '../../services/DoctorService';
+import LinearProgress from '@material-ui/core/LinearProgress';
 
 class AddClinicalTrial extends Page {
 
@@ -35,7 +36,8 @@ class AddClinicalTrial extends Page {
             data: props.data ? props.data : {},
             dataMeta: props.dataMeta ? props.dataMeta : {},
             errors: {},
-            patients: []
+            patients: [],
+            displayProgress: false
         };
 
         this.props.changeFullScreen(false);
@@ -108,14 +110,21 @@ class AddClinicalTrial extends Page {
             formData.append(key, value);
         }
 
+        this.setState({displayProgress: true});
+
         addClinicalTrial(formData).then(response => {
 
             if(!response.ok) {
                 this.props.enqueueSnackbar(strings.clinicalTrial.form.error, { variant: 'error' });
+                this.setState({displayProgress: false});
                 return;
             }
 
             this.props.enqueueSnackbar(strings.clinicalTrial.form.success, { variant: 'success' });
+
+            this.setState({displayProgress: false});
+
+
             this.props.history.push("/");
         });
     }
@@ -141,9 +150,14 @@ class AddClinicalTrial extends Page {
                             onCancel={ this.props.onCancel }
                             data={ this.state.data } 
                             errors={ this.state.errors }  
-                        /> 
+                        />
+                        
                     </Paper>
+                    {
+                        this.state.displayProgress && <LinearProgress color="secondary" />
+                    }
                 </Grid>
+                
             </div>
             
         );

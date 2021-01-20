@@ -3,7 +3,6 @@ package rs.ac.uns.ftn.medDataShare.dto;
 import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONObject;
-import rs.ac.uns.ftn.medDataShare.entity.ClinicalTrialAccessRequest;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -36,6 +35,9 @@ public class ClinicalTrialAccessRequestDto {
 
     @Property()
     private boolean anonymity;
+
+    @Property()
+    private String clinicalTrialType;
 
 //    @Property()
 //    private ClinicalTrialDto clinicalTrial;
@@ -124,6 +126,15 @@ public class ClinicalTrialAccessRequestDto {
         return this;
     }
 
+    public String getClinicalTrialType() {
+        return clinicalTrialType;
+    }
+
+    public ClinicalTrialAccessRequestDto setClinicalTrialType(String clinicalTrialType) {
+        this.clinicalTrialType = clinicalTrialType;
+        return this;
+    }
+
     public static byte[] serialize(Object object){
         String jsonStr = new JSONObject(object).toString();
         return jsonStr.getBytes(UTF_8);
@@ -135,7 +146,6 @@ public class ClinicalTrialAccessRequestDto {
     }
 
     public static ClinicalTrialAccessRequestDto parseClinicalTrialAccessRequest(JSONObject jsonObject) {
-
         String key = jsonObject.getString("key");
         String patientId = jsonObject.getString("patientId");
         String requesterId = jsonObject.getString("requesterId");
@@ -145,10 +155,8 @@ public class ClinicalTrialAccessRequestDto {
         String accessAvailableUntil = jsonObject.getString("accessAvailableUntil");
         boolean anonymity = jsonObject.getBoolean("anonymity");
 
-//        JSONObject clinicalTrialJsonObject = json.getJSONObject("clinicalTrial");
-//        ClinicalTrial clinicalTrial = ClinicalTrial.parseClinicalTrial(clinicalTrialJsonObject);
-
         String clinicalTrialJsonObject = jsonObject.getString("clinicalTrial");
+        String clinicalTrialType = jsonObject.getString("clinicalTrialType");
 
         return createInstance(
                 key,
@@ -159,7 +167,8 @@ public class ClinicalTrialAccessRequestDto {
                 accessAvailableFrom,
                 accessAvailableUntil,
                 anonymity,
-                clinicalTrialJsonObject
+                clinicalTrialJsonObject,
+                clinicalTrialType
         );
     }
 
@@ -187,7 +196,8 @@ public class ClinicalTrialAccessRequestDto {
             String accessAvailableFrom,
             String accessAvailableUntil,
             boolean anonymity,
-            String clinicalTrial
+            String clinicalTrial,
+            String clinicalTrialType
     ){
         return new ClinicalTrialAccessRequestDto()
                 .setKey(key)
@@ -199,6 +209,7 @@ public class ClinicalTrialAccessRequestDto {
                 .setAccessAvailableUntil(accessAvailableUntil)
                 .setAnonymity(anonymity)
                 .setClinicalTrial(clinicalTrial)
+                .setClinicalTrialType(clinicalTrialType)
                 ;
     }
 }

@@ -1,13 +1,14 @@
 package rs.ac.uns.ftn.fhir.fhir_server.converter;
 
 import org.hl7.fhir.r4.model.*;
-import org.hl7.fhir.utilities.xhtml.NodeType;
-import org.hl7.fhir.utilities.xhtml.XhtmlNode;
 import org.springframework.stereotype.Component;
 import rs.ac.uns.ftn.fhir.fhir_server.entity.imagingStudy.ImagingStudyEntity;
 import rs.ac.uns.ftn.fhir.fhir_server.entity.imagingStudy.ImagingStudySeria;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @Component
 public class ImagingStudyConverter implements EntityFHIRConverter<ImagingStudyEntity, ImagingStudy> {

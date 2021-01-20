@@ -33,6 +33,18 @@ public abstract class User implements Serializable, UserDetails {
     private String password;
     private String email;
     private String firstName;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id='" + id + '\'' +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
+
     private String lastName;
     private Date activeSince;
     private boolean accountExpired;

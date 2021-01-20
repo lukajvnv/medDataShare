@@ -3,8 +3,9 @@ package rs.ac.uns.ftn.medDataShare.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import rs.ac.uns.ftn.medDataShare.dto.user.MedWorkerDto;
 import rs.ac.uns.ftn.medDataShare.dto.form.MedWorkerForm;
+import rs.ac.uns.ftn.medDataShare.dto.medInstitution.MedAdminDoctors;
+import rs.ac.uns.ftn.medDataShare.dto.user.MedWorkerDto;
 import rs.ac.uns.ftn.medDataShare.security.service.UserDetailsServiceImpl;
 import rs.ac.uns.ftn.medDataShare.service.MedAdminService;
 import rs.ac.uns.ftn.medDataShare.util.ValidationUtil;
@@ -12,7 +13,6 @@ import rs.ac.uns.ftn.medDataShare.validator.AuthException;
 import rs.ac.uns.ftn.medDataShare.validator.ValidationException;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/medAdmin")
@@ -25,7 +25,7 @@ public class MedAdminController {
     private MedAdminService medAdminService;
 
     @GetMapping("/doctor")
-    public List<MedWorkerDto> getAllMedInstitutionDoctors(){
+    public MedAdminDoctors getAllMedInstitutionDoctors(){
         return medAdminService.getAllMedInstitutionDoctors();
     }
 

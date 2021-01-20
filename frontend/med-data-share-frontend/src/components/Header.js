@@ -15,13 +15,12 @@ import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddIcon from '@material-ui/icons/Add';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import HomeIcon from '@material-ui/icons/Home';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 
 import { 
     ListItemIcon, ListItemText, 
     Menu, MenuItem,
-    IconButton, Tooltip, Badge
+    IconButton, Tooltip
 } from "@material-ui/core";
 
 class Header extends Component {
@@ -110,7 +109,7 @@ class Header extends Component {
                         </Tooltip>
                     </Link>
 
-                    <Link to={"/"} >
+                    {/* <Link to={"/"} >
                         <Tooltip title={strings.menu.Notifications} aria-label="add" arrow>
                             <Badge badgeContent={4} color="primary" variant="dot">
                                 <IconButton color="primary">
@@ -118,7 +117,7 @@ class Header extends Component {
                                 </IconButton>
                             </Badge>
                         </Tooltip>
-                    </Link>
+                    </Link> */}
 
                     <IconButton
                         size="small"

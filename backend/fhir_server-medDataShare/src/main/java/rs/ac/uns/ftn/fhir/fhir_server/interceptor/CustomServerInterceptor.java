@@ -6,7 +6,6 @@ import ca.uhn.fhir.interceptor.api.Pointcut;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.api.server.ResponseDetails;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
-import org.hl7.fhir.instance.model.api.IBaseResource;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -41,10 +40,7 @@ public class CustomServerInterceptor {
             value = Pointcut.SERVER_HANDLE_EXCEPTION,
             order = 10000
     )
-    public boolean d(RequestDetails theRequestDetails, ResponseDetails theResponseObject, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws AuthenticationException {
-
-
-
+    public boolean exceptionOccurred(RequestDetails theRequestDetails, ResponseDetails theResponseObject, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) throws AuthenticationException {
         return true;
     }
 }

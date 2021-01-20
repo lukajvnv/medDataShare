@@ -3,11 +3,7 @@ package rs.ac.uns.ftn.medDataShare.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import rs.ac.uns.ftn.medDataShare.chaincode.dto.ClinicalTrialOfflineDto;
 import rs.ac.uns.ftn.medDataShare.converter.AdminConverter;
 import rs.ac.uns.ftn.medDataShare.converter.CommonUserConverter;
 import rs.ac.uns.ftn.medDataShare.converter.MedInstitutionConverter;
@@ -17,28 +13,23 @@ import rs.ac.uns.ftn.medDataShare.dto.contract.ClinicalTrialAccessRequestForm;
 import rs.ac.uns.ftn.medDataShare.dto.contract.ClinicalTrialAccessSendRequestForm;
 import rs.ac.uns.ftn.medDataShare.dto.contract.ClinicalTrialPreviewDto;
 import rs.ac.uns.ftn.medDataShare.dto.form.SearchClinicalTrialForm;
+import rs.ac.uns.ftn.medDataShare.dto.medInstitution.ClinicalTrialDto;
 import rs.ac.uns.ftn.medDataShare.dto.medInstitution.MedInstitutionDto;
 import rs.ac.uns.ftn.medDataShare.dto.user.UserDto;
-import rs.ac.uns.ftn.medDataShare.enums.AccessType;
-import rs.ac.uns.ftn.medDataShare.enums.ClinicalTrialType;
 import rs.ac.uns.ftn.medDataShare.model.medInstitution.MedInstitution;
 import rs.ac.uns.ftn.medDataShare.model.user.Admin;
 import rs.ac.uns.ftn.medDataShare.model.user.CommonUser;
-import rs.ac.uns.ftn.medDataShare.model.user.User;
 import rs.ac.uns.ftn.medDataShare.model.user.MedWorker;
+import rs.ac.uns.ftn.medDataShare.model.user.User;
 import rs.ac.uns.ftn.medDataShare.repository.AdminRepository;
 import rs.ac.uns.ftn.medDataShare.repository.CommonUserRepository;
 import rs.ac.uns.ftn.medDataShare.repository.MedInstitutionRepository;
 import rs.ac.uns.ftn.medDataShare.repository.MedWorkerRepository;
 import rs.ac.uns.ftn.medDataShare.security.service.UserDetailsServiceImpl;
 import rs.ac.uns.ftn.medDataShare.util.Constants;
-import rs.ac.uns.ftn.medDataShare.util.ValidationUtil;
+import rs.ac.uns.ftn.medDataShare.util.StringUtil;
 import rs.ac.uns.ftn.medDataShare.validator.AuthException;
-import rs.ac.uns.ftn.medDataShare.validator.ValidationException;
 
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,6 +66,12 @@ public class UserService {
 
     @Autowired
     private MedInstitutionConverter medInstitutionConverter;
+
+    @Autowired
+    private HyperledgerService hyperledgerService;
+
+    @Autowired
+    private FhirService fhirService;
 
     public UserDto getCurrentUser(){
         User user = (User) userDetailsService.getLoggedUser();
@@ -119,49 +116,16 @@ public class UserService {
         }
     }
 
-    public List<ClinicalTrialAccessRequestDto> getClinicalTrialAccessRequests(){
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.MONTH, 6);
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-
-        ClinicalTrialAccessRequestDto clinicalTrialAccessRequestDto1 = ClinicalTrialAccessRequestDto
-                .builder()
-                .id("123456789")
-                .time(new Date())
-                .clinicalTrialType(ClinicalTrialType.CT)
-                .sender("fjdkfdfdjfd")
-                .receiver("jfdkljdfjdfd")
-                .clinicalTrial("flkjfdkjfldk")
-                .accessDecision(AccessType.UNCONDITIONAL)
-                .anonymity(true)
-                .from(new Date())
-                .until(cal.getTime())
-                .build();
-        ClinicalTrialAccessRequestDto clinicalTrialAccessRequestDto2 = ClinicalTrialAccessRequestDto
-                .builder()
-                .id("9876543210")
-                .time(new Date())
-                .clinicalTrialType(ClinicalTrialType.CT)
-                .sender("hahahahahahahh")
-                .receiver("mamamamamamam")
-                .clinicalTrial("qqrerewdsffdfds")
-                .accessDecision(AccessType.IDLE)
-                .anonymity(true)
-                .from(new Date())
-                .until(cal.getTime())
-                .build();
-
-        List<ClinicalTrialAccessRequestDto> clinicalTrialAccessRequestDtos = new ArrayList<ClinicalTrialAccessRequestDto>(){
-            {
-                add(clinicalTrialAccessRequestDto1);
-                add(clinicalTrialAccessRequestDto2);
-            }
-        };
+    public List<ClinicalTrialAccessRequestDto> getClinicalTrialAccessRequests(String requestType) throws Exception {
+        User user = (User) userDetailsService.getLoggedUser();
+        List<ClinicalTrialAccessRequestDto> clinicalTrialAccessRequestDtos = hyperledgerService.getClinicalTrialAccessRequests(user, requestType);
 
         return clinicalTrialAccessRequestDtos;
     }
 
-    public ClinicalTrialAccessRequestDto trialAccessRequestDecision(ClinicalTrialAccessRequestForm clinicalTrialAccessRequestForm){
+    public ClinicalTrialAccessRequestDto trialAccessRequestDecision(ClinicalTrialAccessRequestForm clinicalTrialAccessRequestForm) throws Exception {
+        User user = (User) userDetailsService.getLoggedUser();
+        hyperledgerService.trialAccessRequestDecision(user, clinicalTrialAccessRequestForm);
         return new ClinicalTrialAccessRequestDto();
     }
 
@@ -174,43 +138,51 @@ public class UserService {
             SearchClinicalTrialForm searchClinicalTrialForm,
             String page,
             String perPage
-    ){
-        ClinicalTrialPreviewDto clinicalTrialPreviewDto1 = ClinicalTrialPreviewDto
-                .builder()
-                .time(new Date())
-                .clinicalTrialType(ClinicalTrialType.CT)
-                .clinicalTrial("flkjfdkjfldk")
-                .accessType(AccessType.UNCONDITIONAL)
-                .institution("Institution1")
-                .build();
-        ClinicalTrialPreviewDto clinicalTrialPreviewDto2 = ClinicalTrialPreviewDto
-                .builder()
-                .time(new Date())
-                .clinicalTrialType(ClinicalTrialType.CBC)
-                .clinicalTrial("qqrerewdsffdfds")
-                .accessType(AccessType.IDLE)
-                .institution("Institution2")
-                .build();
-
-        List<ClinicalTrialPreviewDto> clinicalTrialAccessRequestDtos = new ArrayList<ClinicalTrialPreviewDto>(){
-            {
-                add(clinicalTrialPreviewDto1);
-                add(clinicalTrialPreviewDto2);
-            }
-        };
-
-
-        return clinicalTrialAccessRequestDtos;
+    ) throws Exception {
+        User user = (User) userDetailsService.getLoggedUser();
+        List<ClinicalTrialPreviewDto> clinicalTrialPreviewDtos = hyperledgerService.getClinicalTrialsPreview(searchClinicalTrialForm, page, perPage, user);
+        return clinicalTrialPreviewDtos;
     }
 
-    public ClinicalTrialAccessSendRequestForm sendAccessRequest(ClinicalTrialAccessSendRequestForm clinicalTrialAccessSendRequestForm){
+    public ClinicalTrialAccessSendRequestForm sendAccessRequest(ClinicalTrialAccessSendRequestForm clinicalTrialAccessSendRequestForm) throws Exception {
         User user = (User) userDetailsService.getLoggedUser();
         clinicalTrialAccessSendRequestForm.setSender(user.getId());
         clinicalTrialAccessSendRequestForm.setTime(new Date());
-        return new ClinicalTrialAccessSendRequestForm();
+        hyperledgerService.sendAccessRequest(user, clinicalTrialAccessSendRequestForm);
+        return clinicalTrialAccessSendRequestForm;
+    }
+
+    public ClinicalTrialDto getClinicalTrial(String clinicalTrialId, String accessUserRole) throws Exception {
+        User user = userDetailsService.getLoggedUser();
+        String currentDate = StringUtil.parseDate(new Date());
+        ClinicalTrialOfflineDto clinicalTrialOfflineChaincodeDto = hyperledgerService.accessToClinicalTrial(user, clinicalTrialId, currentDate, accessUserRole);
+        ClinicalTrialDto offlineClinicalTrial = fhirService.getImagingStudy(clinicalTrialOfflineChaincodeDto.getOfflineDataUrl());
+        if(hyperledgerService.validData(offlineClinicalTrial.toString(), clinicalTrialOfflineChaincodeDto.getHashData())){
+            if(clinicalTrialOfflineChaincodeDto.isAnonymity()){
+                //anonymize data
+                offlineClinicalTrial = anonymizeData(offlineClinicalTrial);
+            }
+            return offlineClinicalTrial;
+        } else {
+            throw new Exception("Data are corrupted!!!");
+        }
     }
 
     public MedInstitutionDto convert(MedInstitution medInstitution){
         return medInstitutionConverter.convertToDto(medInstitution);
+    }
+
+    public ClinicalTrialDto anonymizeData(ClinicalTrialDto clinicalTrialDto){
+        User patient = commonUserRepository.getOne(clinicalTrialDto.getPatient());
+        String patientFirstName = patient.getFirstName();
+        String patientLastName = patient.getLastName();
+        String anonymizeIntroduction = StringUtil.anonymizePatientData(clinicalTrialDto.getIntroduction(), patientFirstName, patientLastName);
+        String anonymizeRelevantParameters = StringUtil.anonymizePatientData(clinicalTrialDto.getRelevantParameters(), patientFirstName, patientLastName);;
+        String anonymizeConclusion = StringUtil.anonymizePatientData(clinicalTrialDto.getConclusion(), patientFirstName, patientLastName);;
+
+        clinicalTrialDto.setIntroduction(anonymizeIntroduction);
+        clinicalTrialDto.setRelevantParameters(anonymizeRelevantParameters);
+        clinicalTrialDto.setConclusion(anonymizeConclusion);
+        return clinicalTrialDto;
     }
 }

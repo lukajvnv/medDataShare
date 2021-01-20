@@ -3,22 +3,23 @@ package rs.ac.uns.ftn.medDataShare.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import rs.ac.uns.ftn.medDataShare.chaincode.client.RegisterUserHyperledger;
 import rs.ac.uns.ftn.medDataShare.converter.AdminConverter;
 import rs.ac.uns.ftn.medDataShare.converter.MedInstitutionConverter;
 import rs.ac.uns.ftn.medDataShare.converter.MedWorkerConverter;
-import rs.ac.uns.ftn.medDataShare.converter.UserInterface;
-import rs.ac.uns.ftn.medDataShare.dto.medInstitution.MedInstitutionDto;
+import rs.ac.uns.ftn.medDataShare.converter.declaration.UserInterface;
 import rs.ac.uns.ftn.medDataShare.dto.form.MedWorkerForm;
+import rs.ac.uns.ftn.medDataShare.dto.medInstitution.MedInstitutionDto;
 import rs.ac.uns.ftn.medDataShare.dto.user.MedWorkerDto;
 import rs.ac.uns.ftn.medDataShare.dto.user.UserDto;
-import rs.ac.uns.ftn.medDataShare.model.user.Admin;
 import rs.ac.uns.ftn.medDataShare.model.medInstitution.MedInstitution;
+import rs.ac.uns.ftn.medDataShare.model.user.Admin;
 import rs.ac.uns.ftn.medDataShare.model.user.MedWorker;
 import rs.ac.uns.ftn.medDataShare.repository.AdminRepository;
 import rs.ac.uns.ftn.medDataShare.repository.MedInstitutionRepository;
 import rs.ac.uns.ftn.medDataShare.repository.MedWorkerRepository;
-import rs.ac.uns.ftn.medDataShare.security.service.UserDetailsServiceImpl;
 import rs.ac.uns.ftn.medDataShare.util.Constants;
+import rs.ac.uns.ftn.medDataShare.validator.AuthException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,9 +35,6 @@ public class SuperAdminService implements UserInterface<Admin, UserDto, UserDto>
 
     @Autowired
     private PasswordEncoder userPasswordEncoder;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private MedInstitutionConverter medInstitutionConverter;
@@ -69,7 +67,15 @@ public class SuperAdminService implements UserInterface<Admin, UserDto, UserDto>
         medWorkerDto.setRole(Constants.ROLE_MED_ADMIN);
         medWorkerDto.setPassword(userPasswordEncoder.encode(medWorkerDto.getPassword()));
         MedWorker medWorker = convert(medWorkerDto);
-        return convert(medWorkerRepository.save(medWorker));
+        MedWorker savedMedWorker = medWorkerRepository.save(medWorker);
+        try {
+            String appUserIdentityId = savedMedWorker.getEmail();
+            String org = savedMedWorker.getMedInstitution().getMembershipOrganizationId();
+            RegisterUserHyperledger.enrollOrgAppUser(appUserIdentityId, org, savedMedWorker.getId());
+        } catch (Exception e) {
+            throw new AuthException("Error while signUp in hyperledger");
+        }
+        return convert(savedMedWorker);
     }
 
     private MedInstitutionDto convert(MedInstitution medInstitution){

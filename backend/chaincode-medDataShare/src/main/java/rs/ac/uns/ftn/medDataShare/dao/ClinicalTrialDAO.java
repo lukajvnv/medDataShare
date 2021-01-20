@@ -3,12 +3,9 @@ package rs.ac.uns.ftn.medDataShare.dao;
 
 import com.owlike.genson.Genson;
 import org.hyperledger.fabric.contract.Context;
-import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.CompositeKey;
 import rs.ac.uns.ftn.medDataShare.dto.ClinicalTrialDto;
 import rs.ac.uns.ftn.medDataShare.entity.ClinicalTrial;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ClinicalTrialDAO {
@@ -38,9 +35,10 @@ public class ClinicalTrialDAO {
 
     public ClinicalTrial defineClinicalTrialAccess(
             String key,
-            String accessType
+            String accessType,
+            String updatedDataHash
     ) {
-        return clinicalTrialCRUD.defineClinicalTrialAccess(key, accessType);
+        return clinicalTrialCRUD.defineClinicalTrialAccess(key, accessType, updatedDataHash);
     }
 
     public ClinicalTrial getClinicalTrial(String key) {
@@ -55,5 +53,9 @@ public class ClinicalTrialDAO {
                                                            String medInstitution, String from, String until, String sortingOrder, String relevantParameters
     ) {
         return clinicalTrialQuery.getClinicalTrialsPreview(clinicalTrialType, medInstitution, from, until, sortingOrder, relevantParameters);
+    }
+
+    public ClinicalTrial getClinicalTrialByOfflineDataUrl(String key) {
+        return clinicalTrialQuery.getClinicalTrialByOfflineDataUrl(key);
     }
 }

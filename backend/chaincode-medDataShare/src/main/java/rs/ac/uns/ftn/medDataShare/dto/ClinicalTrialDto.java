@@ -4,8 +4,6 @@ import org.hyperledger.fabric.contract.annotation.DataType;
 import org.hyperledger.fabric.contract.annotation.Property;
 import org.json.JSONObject;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 @DataType()
 public class ClinicalTrialDto {
 

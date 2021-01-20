@@ -47,8 +47,6 @@ class AddDoctor extends FormComponent {
 
         this.showDrawerLoader();
         
-        this.state.data['medInstitution'] = this.props.medInstitution;
-
         addDoctor(this.state.data).then(response => {
 
             if(!response.ok) {

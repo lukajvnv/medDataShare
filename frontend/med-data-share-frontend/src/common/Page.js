@@ -179,7 +179,11 @@ class Page extends FormComponent {
     }
 
     renderColumnDate(value) {
-        return dateToString(value);
+        if(value){
+            return dateToString(value);
+        } else {
+            return "...";
+        }
     }
 }
 

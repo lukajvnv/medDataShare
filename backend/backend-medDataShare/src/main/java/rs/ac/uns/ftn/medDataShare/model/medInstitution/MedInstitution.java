@@ -2,9 +2,11 @@ package rs.ac.uns.ftn.medDataShare.model.medInstitution;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.security.core.GrantedAuthority;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 @Getter
@@ -22,5 +24,6 @@ public class MedInstitution  {
 
     private String name;
     private String address;
+    private String membershipOrganizationId;
 }
 

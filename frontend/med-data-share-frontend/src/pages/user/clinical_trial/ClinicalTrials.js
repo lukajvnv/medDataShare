@@ -160,6 +160,7 @@ class ClinicalTrials extends Page {
                             form={false}
                             submitLabel={strings.clinicalTrial.detail.ok}
                             displayResource={true}
+                            displayPdfExportButton={true}
                         />
                 }
             </div>

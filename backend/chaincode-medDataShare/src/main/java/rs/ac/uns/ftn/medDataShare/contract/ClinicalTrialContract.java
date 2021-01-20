@@ -1,36 +1,26 @@
-/*
-SPDX-License-Identifier: Apache-2.0
-*/
 package rs.ac.uns.ftn.medDataShare.contract;
 
 import com.google.protobuf.ByteString;
-import com.owlike.genson.Genson;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.*;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ledger.CompositeKey;
+import org.hyperledger.fabric.shim.ext.sbe.StateBasedEndorsement;
+import org.hyperledger.fabric.shim.ext.sbe.impl.StateBasedEndorsementFactory;
 import rs.ac.uns.ftn.medDataShare.component.ClinicalTrialContext;
 import rs.ac.uns.ftn.medDataShare.dao.ClinicalTrialAccessRequestDAO;
-import rs.ac.uns.ftn.medDataShare.dto.ClinicalTrialAccessRequestDto;
-import rs.ac.uns.ftn.medDataShare.dto.ClinicalTrialDto;
-import rs.ac.uns.ftn.medDataShare.dto.ClinicalTrialsAccessRequestResponse;
-import rs.ac.uns.ftn.medDataShare.dto.ClinicalTrialsPreviewResponse;
+import rs.ac.uns.ftn.medDataShare.dto.*;
 import rs.ac.uns.ftn.medDataShare.entity.ClinicalTrial;
 import rs.ac.uns.ftn.medDataShare.entity.ClinicalTrialAccessRequest;
 import rs.ac.uns.ftn.medDataShare.enumeration.AccessType;
-import rs.ac.uns.ftn.medDataShare.enumeration.ClinicalTrialType;
+import rs.ac.uns.ftn.medDataShare.enumeration.AccessUserRole;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-/**
- * Define commercial paper smart contract by extending Fabric Contract class
- *
- */
+
 @Contract(name = "rs.ac.uns.ftn.clinicalTrial",
         info = @Info(
                 title = "ClinicalTrial contract",
@@ -45,7 +35,9 @@ public class ClinicalTrialContract implements ContractInterface {
 
     private enum ClinicalTrialContractErrors {
         CLINICAL_TRIAL_NOT_FOUND,
-        ASSET_ALREADY_EXISTS
+        CLINICAL_TRIAL_ACCESS_REQUEST_NOT_FOUND,
+        UNAUTHORIZED_EDIT_ACCESS,
+        VALIDATE_CLINICAL_TRIAL_ACCESS_ERROR
     }
 
     private final static Logger LOG = Logger.getLogger(ClinicalTrialContract.class.getName());
@@ -75,6 +67,12 @@ public class ClinicalTrialContract implements ContractInterface {
         LOG.info(String.format(", clientIdentityId: %s, clientIdentityMspId: %s", clientIdentityId, clientIdentityMspId));
     }
 
+    private static void setStateBasedEndorsement(final Context ctx, final String assetId, final String[] ownerOrgs) {
+        StateBasedEndorsement stateBasedEndorsement = StateBasedEndorsementFactory.getInstance().newStateBasedEndorsement(null);
+        stateBasedEndorsement.addOrgs(StateBasedEndorsement.RoleType.RoleTypeMember, ownerOrgs);
+        ctx.getStub().setStateValidationParameter(assetId, stateBasedEndorsement.policy());
+    }
+
     @Override
     public void afterTransaction(Context ctx, Object result) {
         String function = ctx.getStub().getFunction();
@@ -94,158 +92,7 @@ public class ClinicalTrialContract implements ContractInterface {
 
     @Transaction
     public void instantiate(ClinicalTrialContext ctx) {
-        migrate(ctx);
-    }
 
-    public void migrate(ClinicalTrialContext ctx) {
-        // No implementation required with this example
-        // It could be where data migration is performed, if necessary
-        ClinicalTrial clinicalTrial1 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key1",
-                AccessType.IDLE,
-                "patient1",
-                "doctor1",
-                "medInstitution1",
-                "2020-05-01",
-                ClinicalTrialType.CBC,
-                "http://clinicalTrial1",
-                "hash",
-                true
-        );
-        ClinicalTrial clinicalTrial2 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key2",
-                AccessType.IDLE,
-                "patient1",
-                "doctor1",
-                "medInstitution1",
-                "2021-01-01",
-                ClinicalTrialType.CT,
-                "http://clinicalTrial2",
-                "hash",
-                false
-        );
-        ClinicalTrial clinicalTrial3 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key3",
-                AccessType.ASK_FOR_ACCESS,
-                "patient2",
-                "doctor1",
-                "medInstitution1",
-                "2020-07-01",
-                ClinicalTrialType.CBC,
-                "http://clinicalTrial3",
-                "hash",
-                true
-        );
-        ClinicalTrial clinicalTrial4 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key4",
-                AccessType.UNCONDITIONAL,
-                "patient2",
-                "doctor1",
-                "medInstitution1",
-                "2020-08-01",
-                ClinicalTrialType.RTG,
-                "http://clinicalTrial4",
-                "hash",
-                false
-        );
-        ClinicalTrial clinicalTrial5 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key5",
-                AccessType.ASK_FOR_ACCESS,
-                "patient3",
-                "doctor1",
-                "medInstitution1",
-                "2021-02-01",
-                ClinicalTrialType.CBC,
-                "clinicalTrial5",
-                "hash",
-                true
-        );
-        ClinicalTrial clinicalTrial6 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key6",
-                AccessType.ASK_FOR_ACCESS,
-                "patient3",
-                "doctor1",
-                "medInstitution2",
-                "2021-01-01",
-                ClinicalTrialType.CBC,
-                "http://clinicalTrial6",
-                "hash",
-                true
-        );
-        ClinicalTrial clinicalTrial7 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key7",
-                AccessType.ASK_FOR_ACCESS,
-                "patient2",
-                "doctor2",
-                "medInstitution2",
-                "2021-02-01",
-                ClinicalTrialType.CBC,
-                "http://clinicalTrial7",
-                "hash",
-                false
-        );
-        ClinicalTrial clinicalTrial8 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key8",
-                AccessType.ASK_FOR_ACCESS,
-                "patient1",
-                "doctor1",
-                "medInstitution2",
-                "2021-03-01",
-                ClinicalTrialType.US,
-                "http://clinicalTrial8",
-                "hash",
-                true
-        );
-        ClinicalTrial clinicalTrial9 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key9",
-                AccessType.ASK_FOR_ACCESS,
-                "patient1",
-                "doctor1",
-                "medInstitution1",
-                "2020-01-01",
-                ClinicalTrialType.CBC,
-                "http://clinicalTrial9",
-                "hash",
-                false
-        );
-        ClinicalTrial clinicalTrial10 = ctx.getClinicalTrialDAO().addClinicalTrial(
-                "key10",
-                AccessType.ASK_FOR_ACCESS,
-                "patient1",
-                "doctor1",
-                "medInstitution1",
-                "2021-01-01",
-                ClinicalTrialType.CBC,
-                "http://clinicalTrial10",
-                "hash",
-                true
-        );
-    }
-
-    @Transaction
-    public void migrateClinicalTrialAccessRequest(ClinicalTrialContext ctx) {
-        ClinicalTrialAccessRequest clinicalTrialAccessRequest1 = addClinicalTrialAccessRequest(
-                ctx,
-                "patient1",
-                "2020-03-03",
-                "user5",
-                AccessType.IDLE,
-                "2021-01-01",
-                "2021-03-03",
-                true,
-                "key1"
-        );
-//        ClinicalTrialAccessRequest clinicalTrialAccessRequest2 = addClinicalTrialAccessRequest(
-//                ctx,
-//                "patient1",
-//                "2020-03-03",
-//                "user5",
-//                AccessType.FORBIDDEN,
-//                "2021-04-01",
-//                "2021-05-03",
-//                false,
-//                "key2"
-//        );
     }
 
     @Transaction
@@ -281,15 +128,42 @@ public class ClinicalTrialContract implements ContractInterface {
     @Transaction
     public ClinicalTrial defineClinicalTrialAccess(
             ClinicalTrialContext ctx,
-            String key,
-            String accessType
+            String offlineDataUrl,
+            String accessType,
+            String updatedDataHash,
+            String oldDataHash
     ) {
-        if (ctx.getClinicalTrialDAO().clinicalTrialExist(key)) {
-            return ctx.getClinicalTrialDAO().defineClinicalTrialAccess(key, accessType);
+        ClinicalTrial clinicalTrial = ctx.getClinicalTrialDAO().getClinicalTrialByOfflineDataUrl(offlineDataUrl);
+        if (clinicalTrial != null) {
+            authorizeRequest(ctx, clinicalTrial.getPatientId(), "defineClinicalTrialAccess");
+            String savedOldHash = clinicalTrial.getHashData();
+            if(oldDataHash.equals(savedOldHash)){
+                return ctx.getClinicalTrialDAO().defineClinicalTrialAccess(clinicalTrial.getKey(), accessType, updatedDataHash);
+            } else {
+                String errorMessage = String.format("ClinicalTrial with offlineUrl %s is corrupted!!!", offlineDataUrl);
+                System.out.println(errorMessage);
+                throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.CLINICAL_TRIAL_NOT_FOUND.toString());
+            }
         } else {
-            String errorMessage = String.format("ClinicalTrial %s does not exist", key);
+            String errorMessage = String.format("ClinicalTrial with offlineUrl %s does not exist", offlineDataUrl);
             System.out.println(errorMessage);
             throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.CLINICAL_TRIAL_NOT_FOUND.toString());
+        }
+    }
+
+    private void authorizeRequest(ClinicalTrialContext ctx, String userIdentityInDb, String methodName){
+        String userIdentityId = "";
+        try {
+            userIdentityId = ctx.getClientIdentity().getAttributeValue("userIdentityId");
+        } catch (Exception e) {
+            String errorMessage = "Error during method ctx.getClientIdentity.getAttributeValue(...)";
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
+        }
+        if(!userIdentityId.equals(userIdentityInDb)) {
+            String errorMessage = String.format("Error during method: %s , identified user does not have write rights", methodName);
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
         }
     }
 
@@ -323,8 +197,7 @@ public class ClinicalTrialContract implements ContractInterface {
     ) {
         ClinicalTrial clinicalTrial = getClinicalTrial(ctx, clinicalTrialId);
 
-        ClinicalTrialAccessRequestDAO clinicalTrialAccessRequestDAO = ctx.getClinicalTrialAccessRequestDAO();
-        return clinicalTrialAccessRequestDAO.addClinicalTrialAccessRequest(
+        return ctx.getClinicalTrialAccessRequestDAO().addClinicalTrialAccessRequest(
                 patientId,
                 time,
                 requesterId,
@@ -337,18 +210,59 @@ public class ClinicalTrialContract implements ContractInterface {
     }
 
     @Transaction
+    public ClinicalTrialAccessRequest sendAccessRequest(
+            ClinicalTrialContext ctx,
+            String patientId,
+            String time,
+            String requesterId,
+            String clinicalTrialId
+    ) {
+        ClinicalTrial clinicalTrial = getClinicalTrial(ctx, clinicalTrialId);
+
+        authorizeRequest(ctx, requesterId, "addClinicalTrialAccessRequest(validate requester)");
+        if(!patientId.equals(clinicalTrial.getPatientId())){
+            throw new ChaincodeException("Patient does not match with saved one in trial", ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
+        }
+        if(requesterId.equals(clinicalTrial.getPatientId())){
+            throw new ChaincodeException("Requester is owner of this trial", ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
+        }
+
+        if (clinicalTrial.getAccessType().equals(AccessType.FORBIDDEN)){
+            LOG.info("forbidden");
+            throw new ChaincodeException("Access to this trial is FORBIDDEN", ClinicalTrialContractErrors.VALIDATE_CLINICAL_TRIAL_ACCESS_ERROR.toString());
+        } else if(clinicalTrial.getAccessType().equals(AccessType.UNCONDITIONAL)){
+            return addClinicalTrialAccessRequest(
+                    ctx, patientId, time, requesterId, AccessType.UNCONDITIONAL, "X", "X", false, clinicalTrialId);
+        } else {
+            return ctx.getClinicalTrialAccessRequestDAO().addClinicalTrialAccessRequest(
+                    patientId,
+                    time,
+                    requesterId,
+                    clinicalTrial
+            );
+        }
+    }
+
+    @Transaction
     public ClinicalTrialAccessRequest defineClinicalTrialAccessRequest(
             ClinicalTrialContext ctx,
             String key,
-            String decision
+            String decision,
+            String accessAvailableFrom,
+            String accessAvailableUntil,
+            boolean anonymity
     ) {
         ClinicalTrialAccessRequestDAO clinicalTrialAccessRequestDAO = ctx.getClinicalTrialAccessRequestDAO();
         if (clinicalTrialAccessRequestDAO.clinicalTrialAccessRequestExist(key)) {
-            return ctx.getClinicalTrialAccessRequestDAO().defineClinicalTrialAccessRequest(key, decision);
+            ClinicalTrialAccessRequest clinicalTrialAccessRequest = clinicalTrialAccessRequestDAO.getClinicalTrialAccessRequest(key);
+            authorizeRequest(ctx, clinicalTrialAccessRequest.getPatientId(), "defineClinicalTrialAccessRequest(by patient)");
+            return ctx.getClinicalTrialAccessRequestDAO().defineClinicalTrialAccessRequest(
+                    key, decision, accessAvailableFrom, accessAvailableUntil, anonymity, clinicalTrialAccessRequest
+            );
         } else {
             String errorMessage = String.format("ClinicalTrialAccessRequest %s does not exist", key);
             System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.CLINICAL_TRIAL_NOT_FOUND.toString());
+            throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.CLINICAL_TRIAL_ACCESS_REQUEST_NOT_FOUND.toString());
         }
     }
 
@@ -359,9 +273,9 @@ public class ClinicalTrialContract implements ContractInterface {
             return clinicalTrialAccessRequestDAO.getClinicalTrialAccessRequest(key);
         }
 
-        String errorMessage = String.format("ClinicalTrial %s does not exist", key);
+        String errorMessage = String.format("ClinicalTrialAccessRequest %s does not exist", key);
         System.out.println(errorMessage);
-        throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.CLINICAL_TRIAL_NOT_FOUND.toString());
+        throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.CLINICAL_TRIAL_ACCESS_REQUEST_NOT_FOUND.toString());
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)
@@ -424,5 +338,50 @@ public class ClinicalTrialContract implements ContractInterface {
                         patient
                 );
         return new ClinicalTrialsAccessRequestResponse(clinicalTrialAccessRequests.size(), clinicalTrialAccessRequests);
+    }
+
+    @Transaction(intent = Transaction.TYPE.EVALUATE)
+    public ClinicalTrialOfflineDto accessToClinicalTrial(
+            ClinicalTrialContext ctx,
+            String key,
+            String currentDate,
+            String accessUserRole
+    ) {
+        ClinicalTrialAccessRequest clinicalTrialAccessRequest = getClinicalTrialAccessRequest(ctx, key);
+        if(accessUserRole.equals(AccessUserRole.SENDER)){
+            authorizeRequest(ctx, clinicalTrialAccessRequest.getRequesterId(), "accessToClinicalTrial(requester auth)");
+        } else if(accessUserRole.equals(AccessUserRole.RECEIVER)){
+            authorizeRequest(ctx, clinicalTrialAccessRequest.getPatientId(), "accessToClinicalTrial(patient auth)");
+        } else {
+            throw new ChaincodeException("Inadequate accessUserRole", ClinicalTrialContractErrors.CLINICAL_TRIAL_ACCESS_REQUEST_NOT_FOUND.toString());
+        }
+        boolean anonymity = clinicalTrialAccessRequest.isAnonymity();
+
+        ClinicalTrial clinicalTrial = getClinicalTrial(ctx, clinicalTrialAccessRequest.getClinicalTrial());
+        if(accessUserRole.equals(AccessUserRole.SENDER)){
+            //requester
+            if(currentDate.isEmpty()){
+                throw new ChaincodeException("Inadequate currentDate", ClinicalTrialContractErrors.VALIDATE_CLINICAL_TRIAL_ACCESS_ERROR.toString());
+            }
+
+            if(clinicalTrialAccessRequest.getDecision().equals(AccessType.UNCONDITIONAL)){
+                if(clinicalTrialAccessRequest.getAccessAvailableFrom().equals("X")){   // UNCONDITIONALLY UNCONDITIONAL
+                    return new ClinicalTrialOfflineDto(clinicalTrial.getOfflineDataUrl(), clinicalTrial.getHashData(), anonymity);
+                } else {
+                    int lowerLimit = currentDate.compareTo(clinicalTrialAccessRequest.getAccessAvailableFrom());
+                    int upperLimit = currentDate.compareTo(clinicalTrialAccessRequest.getAccessAvailableUntil());
+                    //date access requirements
+                    if(lowerLimit >= 0 && upperLimit <= 0){
+                        return new ClinicalTrialOfflineDto(clinicalTrial.getOfflineDataUrl(), clinicalTrial.getHashData(), anonymity);
+                    } else {
+                        throw new ChaincodeException("User has no access rights[date range]", ClinicalTrialContractErrors.VALIDATE_CLINICAL_TRIAL_ACCESS_ERROR.toString());
+                    }
+                }
+            } else {
+                throw new ChaincodeException("User has no access rights[decision]", ClinicalTrialContractErrors.VALIDATE_CLINICAL_TRIAL_ACCESS_ERROR.toString());
+            }
+        }
+        //patient
+        return new ClinicalTrialOfflineDto(clinicalTrial.getOfflineDataUrl(), clinicalTrial.getHashData(), anonymity);
     }
 }

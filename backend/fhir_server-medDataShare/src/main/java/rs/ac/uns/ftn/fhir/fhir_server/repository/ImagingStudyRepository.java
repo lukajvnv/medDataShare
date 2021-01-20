@@ -10,9 +10,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import rs.ac.uns.ftn.fhir.fhir_server.converter.ImagingStudyConverter;
-import rs.ac.uns.ftn.fhir.fhir_server.entity.Name;
-import rs.ac.uns.ftn.fhir.fhir_server.entity.PatientEntity;
-import rs.ac.uns.ftn.fhir.fhir_server.entity.Telecom;
 import rs.ac.uns.ftn.fhir.fhir_server.entity.imagingStudy.ImagingStudyEntity;
 import rs.ac.uns.ftn.fhir.fhir_server.repository.declaration.IImagingStudyRepository;
 

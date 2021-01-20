@@ -1,7 +1,6 @@
 package rs.ac.uns.ftn.medDataShare.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import rs.ac.uns.ftn.medDataShare.dto.contract.ClinicalTrialAccessRequestDto;
@@ -10,11 +9,9 @@ import rs.ac.uns.ftn.medDataShare.dto.contract.ClinicalTrialAccessSendRequestFor
 import rs.ac.uns.ftn.medDataShare.dto.contract.ClinicalTrialPreviewDto;
 import rs.ac.uns.ftn.medDataShare.dto.form.ResetPasswordForm;
 import rs.ac.uns.ftn.medDataShare.dto.form.SearchClinicalTrialForm;
+import rs.ac.uns.ftn.medDataShare.dto.medInstitution.ClinicalTrialDto;
 import rs.ac.uns.ftn.medDataShare.dto.medInstitution.MedInstitutionDto;
 import rs.ac.uns.ftn.medDataShare.dto.user.UserDto;
-import rs.ac.uns.ftn.medDataShare.repository.MedInstitutionRepository;
-import rs.ac.uns.ftn.medDataShare.repository.MedWorkerRepository;
-import rs.ac.uns.ftn.medDataShare.security.service.UserDetailsServiceImpl;
 import rs.ac.uns.ftn.medDataShare.service.FhirService;
 import rs.ac.uns.ftn.medDataShare.service.UserService;
 import rs.ac.uns.ftn.medDataShare.util.ValidationUtil;
@@ -22,7 +19,6 @@ import rs.ac.uns.ftn.medDataShare.validator.AuthException;
 import rs.ac.uns.ftn.medDataShare.validator.ValidationException;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -30,19 +26,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private MedInstitutionRepository medInstitutionRepository;
-
-    @Autowired
-    private MedWorkerRepository medWorkerRepository;
-
-    @Autowired
-    private PasswordEncoder userPasswordEncoder;
-
-    @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
 
     @Autowired
     private FhirService fhirService;
@@ -73,15 +57,15 @@ public class UserController {
     @GetMapping("/trialAccessRequest")
     public List<ClinicalTrialAccessRequestDto> getClinicalTrialAccessRequests(
             @RequestParam(value = "requestType", required = false, defaultValue="") String requestType
-    ){
-        return userService.getClinicalTrialAccessRequests();
+    ) throws Exception {
+        return userService.getClinicalTrialAccessRequests(requestType);
     }
 
     @PostMapping("/trialAccessRequest")
     public ClinicalTrialAccessRequestDto trialAccessRequestDecision(
             @Valid @RequestBody ClinicalTrialAccessRequestForm clinicalTrialAccessRequestForm,
             BindingResult result
-    ){
+    ) throws Exception {
         if(result.hasErrors()){
             String errorMsg = ValidationUtil.formatValidationErrorMessages(result.getAllErrors());
             throw new ValidationException(errorMsg);
@@ -100,7 +84,7 @@ public class UserController {
             @RequestParam(value = "page", required = false, defaultValue="") String page,
             @RequestParam(value = "perPage", required = false, defaultValue="") String perPage,
             BindingResult result
-    ){
+    ) throws Exception {
         if(result.hasErrors()){
             String errorMsg = ValidationUtil.formatValidationErrorMessages(result.getAllErrors());
             throw new ValidationException(errorMsg);
@@ -112,12 +96,20 @@ public class UserController {
     public ClinicalTrialAccessSendRequestForm sendAccessRequest(
             @Valid @RequestBody ClinicalTrialAccessSendRequestForm clinicalTrialAccessSendRequestForm,
             BindingResult result
-    ){
+    ) throws Exception {
         if(result.hasErrors()){
             String errorMsg = ValidationUtil.formatValidationErrorMessages(result.getAllErrors());
             throw new ValidationException(errorMsg);
         }
         return userService.sendAccessRequest(clinicalTrialAccessSendRequestForm);
+    }
+
+    @GetMapping("/clinicalTrial/{clinicalTrialId}")
+    public ClinicalTrialDto getClinicalTrial(
+            @PathVariable String clinicalTrialId,
+            @RequestParam(value = "accessUserRole", required = false, defaultValue="requester") String accessUserRole
+    ) throws Exception {
+        return userService.getClinicalTrial(clinicalTrialId, accessUserRole);
     }
 
     @GetMapping("/image/{binaryId}")

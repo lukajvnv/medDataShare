@@ -14,21 +14,20 @@ import java.util.stream.Stream;
 
 public class PdfExporter {
 
-    private static final String FILE_PATH = "resources/pdf/trial.pdf";
-    private static final String IMAGE_PATH = "resources/image/grupe_it.png";
-
-    public static byte[] getBytes() {
-        File outputFile = new File(FILE_PATH);
+    public static byte[] clinicalTrialExportPdf(ClinicalTrialDto clinicalTrialDto, Binary binary){
+        String fileName = "resources/pdf/temp.pdf";
         try {
-            byte[] ui = Files.readAllBytes(outputFile.toPath());
-            return ui;
-        } catch (IOException e) {
+            export(fileName, clinicalTrialDto, binary);
+            byte[] bytes = getBytes(fileName);
+            deleteFile(fileName);
+            return bytes;
+        } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 
-    public static byte[] getBytes(String fileName) {
+    private static byte[] getBytes(String fileName) {
         File outputFile = new File(fileName);
         try {
             byte[] ui = Files.readAllBytes(outputFile.toPath());
@@ -39,49 +38,9 @@ public class PdfExporter {
         }
     }
 
-    public static byte[] clinicalTrialExportPdf(String fileName){
-        fileName = "resources/pdf/temp.pdf";
-        try {
-            export(fileName);
-            byte[] bytes = getBytes();
-            deleteFile(fileName);
-            return bytes;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        byte[] bytes = getBytes();
-        deleteFile(fileName);
-        return bytes;
-    }
-
-    public static byte[] clinicalTrialExportPdf(ClinicalTrialDto clinicalTrialDto, Binary binary){
-        String fileName = "resources/pdf/temp.pdf";
-        try {
-            export(fileName, clinicalTrialDto, binary);
-            byte[] bytes = getBytes(fileName);
-            deleteFile(fileName);
-            return bytes;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (DocumentException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-        byte[] bytes = getBytes();
-        deleteFile(fileName);
-        return bytes;
-    }
-
     private static void export(String fileName, ClinicalTrialDto clinicalTrialDto, Binary binary) throws IOException, DocumentException, URISyntaxException {
         Document document = new Document();
-
-        PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(fileName));
-
+        PdfWriter.getInstance(document, new FileOutputStream(fileName));
         document.open();
 
         document.addAuthor("MedDataShare");
@@ -116,55 +75,6 @@ public class PdfExporter {
         document.close();
     }
 
-    private static void export(String fileName) throws IOException, DocumentException, URISyntaxException {
-        Document document = new Document();
-
-        PdfWriter pdfWriter = PdfWriter.getInstance(document, new FileOutputStream(fileName));
-
-        document.open();
-
-        document.addAuthor("Luka");
-        document.addCreationDate();
-        document.addTitle("Newer pdf");
-        document.addHeader("header", "header desc");
-
-        Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-        Chunk chunk = new Chunk("Hello World", font);
-        Paragraph paragraph = new Paragraph(chunk);
-        paragraph.setPaddingTop(50f);
-        document.add(paragraph);
-        document.add(paragraph);
-
-        Image img = Image.getInstance(IMAGE_PATH);
-
-        PdfPTable table = new PdfPTable(2);
-        table.setSpacingBefore(20f);
-        table.setSpacingAfter(20f);
-        addTableHeader(table);
-        addRows(table);
-        addCustomRows(table);
-
-        document.add(table);
-
-        document.add(img);
-        document.close();
-    }
-
-    private static void encrypt() throws IOException, DocumentException {
-        PdfReader pdfReader = new PdfReader("src/main/resources/pdf/iTextHelloWorld.pdf");
-        PdfStamper pdfStamper
-                = new PdfStamper(pdfReader, new FileOutputStream("src/main/resources/pdf/encryptedPdf.pdf"));
-
-        pdfStamper.setEncryption(
-                "userpass".getBytes(),
-                "ownerpass".getBytes(),
-                0,
-                PdfWriter.ENCRYPTION_AES_256
-        );
-
-        pdfStamper.close();
-    }
-
     private static void deleteFile(String fileName) {
         File outputFile = new File(fileName);
         if(outputFile.delete())
@@ -186,12 +96,6 @@ public class PdfExporter {
                     header.setPhrase(new Phrase(columnTitle));
                     table.addCell(header);
                 });
-    }
-
-    private static void addRows(PdfPTable table) {
-        table.addCell("row 1, col 1");
-        table.addCell("row 1, col 2");
-        table.addCell("row 1, col 3");
     }
 
     private static PdfPCell addStyledCell(String text){
@@ -219,22 +123,4 @@ public class PdfExporter {
         table.addCell(addStyledCell("Conclusion"));
         table.addCell(clinicalTrialDto.getConclusion());
     }
-
-    private static void addCustomRows(PdfPTable table)
-            throws URISyntaxException, BadElementException, IOException {
-        Image img = Image.getInstance(IMAGE_PATH);
-        img.scalePercent(10);
-
-        PdfPCell imageCell = new PdfPCell(img);
-        table.addCell(imageCell);
-
-        PdfPCell horizontalAlignCell = new PdfPCell(new Phrase("row 2, col 2"));
-        horizontalAlignCell.setHorizontalAlignment(Element.ALIGN_CENTER);
-        table.addCell(horizontalAlignCell);
-
-        PdfPCell verticalAlignCell = new PdfPCell(new Phrase("row 2, col 3"));
-        verticalAlignCell.setVerticalAlignment(Element.ALIGN_BOTTOM);
-        table.addCell(verticalAlignCell);
-    }
-
 }

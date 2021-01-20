@@ -1,6 +1,5 @@
 package rs.ac.uns.ftn.medDataShare.security.controller;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.medDataShare.chaincode.Config;
+import rs.ac.uns.ftn.medDataShare.chaincode.client.RegisterUserHyperledger;
 import rs.ac.uns.ftn.medDataShare.model.user.CommonUser;
 import rs.ac.uns.ftn.medDataShare.model.user.User;
 import rs.ac.uns.ftn.medDataShare.repository.CommonUserRepository;
@@ -34,10 +35,10 @@ import java.util.Date;
 public class AuthRestAPIs {
 
     @Autowired
-    AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
 
     @Autowired
-    JwtProvider jwtProvider;
+    private JwtProvider jwtProvider;
 
     @Autowired
     private CommonUserRepository commonUserRepository;
@@ -72,6 +73,11 @@ public class AuthRestAPIs {
                 .activeSince(new Date())
                 .build();
         CommonUser saved = commonUserRepository.save(commonUser);
+        try {
+            RegisterUserHyperledger.enrollOrgAppUser(saved.getEmail(), Config.COMMON_USER_ORG, saved.getId());
+        } catch (Exception e) {
+            throw new AuthException("Error while signUp in hyperledger");
+        }
         return "Success";
     }
     @PostMapping("/signIn")
@@ -100,12 +106,11 @@ public class AuthRestAPIs {
 			return new ResponseEntity<>(new ErrorResponse("Invalid username or password", HttpStatus.UNAUTHORIZED), HttpStatus.UNAUTHORIZED);
 		}
 
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("Get auth: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
-            String jwt = jwtProvider.generateJwtToken(authentication);
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println("Get auth: " + SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+        String jwt = jwtProvider.generateJwtToken(authentication);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-
-        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities(), userDb.getId()));
+        return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities()));
     }
 }

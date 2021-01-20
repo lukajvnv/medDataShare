@@ -1,15 +1,12 @@
 package rs.ac.uns.ftn.medDataShare.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import rs.ac.uns.ftn.medDataShare.dto.form.MedWorkerForm;
 import rs.ac.uns.ftn.medDataShare.dto.medInstitution.MedInstitutionDto;
 import rs.ac.uns.ftn.medDataShare.dto.user.MedWorkerDto;
-import rs.ac.uns.ftn.medDataShare.dto.form.MedWorkerForm;
 import rs.ac.uns.ftn.medDataShare.dto.user.UserDto;
-import rs.ac.uns.ftn.medDataShare.repository.MedInstitutionRepository;
-import rs.ac.uns.ftn.medDataShare.repository.MedWorkerRepository;
 import rs.ac.uns.ftn.medDataShare.security.service.UserDetailsServiceImpl;
 import rs.ac.uns.ftn.medDataShare.service.SuperAdminService;
 import rs.ac.uns.ftn.medDataShare.util.ValidationUtil;
@@ -22,15 +19,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/superAdmin")
 public class SuperAdminController {
-
-    @Autowired
-    private MedInstitutionRepository medInstitutionRepository;
-
-    @Autowired
-    private MedWorkerRepository medWorkerRepository;
-
-    @Autowired
-    private PasswordEncoder userPasswordEncoder;
 
     @Autowired
     private UserDetailsServiceImpl userDetailsService;

@@ -10,11 +10,12 @@ import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.util.VersionUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import rs.ac.uns.ftn.fhir.fhir_server.interceptor.CustomPatientSearchNarrowingInterceptor;
 import rs.ac.uns.ftn.fhir.fhir_server.interceptor.CustomServerAuthorizationInterceptor;
+import rs.ac.uns.ftn.fhir.fhir_server.interceptor.CustomServerCapabilityProvider;
 import rs.ac.uns.ftn.fhir.fhir_server.interceptor.CustomServerInterceptor;
 import rs.ac.uns.ftn.fhir.fhir_server.provider.BinaryProvider;
 import rs.ac.uns.ftn.fhir.fhir_server.provider.ImagingStudyProvider;
-import rs.ac.uns.ftn.fhir.fhir_server.provider.PatientProvider;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
@@ -48,6 +49,8 @@ public class FhirServer extends RestfulServer {
 		super.initialize();
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 
+//		setTenantIdentificationStrategy(new UrlBaseTenantIdentificationStrategy());
+
 		FhirVersionEnum fhirVersion = FhirVersionEnum.R4;
 		setFhirContext(new FhirContext(fhirVersion));
 
@@ -56,7 +59,6 @@ public class FhirServer extends RestfulServer {
         }
 
 		setResourceProviders(Arrays.asList(
-				applicationContext.getBean(PatientProvider.class),
 				applicationContext.getBean(ImagingStudyProvider.class),
 				applicationContext.getBean(BinaryProvider.class)
 		));
@@ -69,15 +71,14 @@ public class FhirServer extends RestfulServer {
 		setDefaultPrettyPrint(true);
 		setDefaultResponseEncoding(EncodingEnum.JSON);
 
+		// triggers on search operation
+		registerInterceptor(new CustomPatientSearchNarrowingInterceptor());
 		registerInterceptor(new CustomServerAuthorizationInterceptor());
 		registerInterceptor(new LoggingInterceptor());
 		registerInterceptor(new CustomServerInterceptor());
 
-		//custom metadata itd... POSTOJI PREDEFINISAN
-//		setServerConformanceProvider(new CustomServerCapabilityProvider());
-
-//		CorsConfiguration corsConfiguration = new CorsConfiguration();
-//		CorsInterceptor corsInterceptor = new CorsInterceptor(corsConfiguration);
+		// Custom extended metadata provider
+		setServerConformanceProvider(new CustomServerCapabilityProvider());
 	}
 
 }

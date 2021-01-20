@@ -6,7 +6,6 @@ import org.hyperledger.fabric.shim.ledger.QueryResultsIterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import rs.ac.uns.ftn.medDataShare.dto.ClinicalTrialAccessRequestDto;
-import rs.ac.uns.ftn.medDataShare.dto.ClinicalTrialDto;
 import rs.ac.uns.ftn.medDataShare.enumeration.AccessType;
 
 import java.util.ArrayList;

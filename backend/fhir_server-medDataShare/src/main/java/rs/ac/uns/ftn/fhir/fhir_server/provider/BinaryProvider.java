@@ -1,23 +1,21 @@
 package rs.ac.uns.ftn.fhir.fhir_server.provider;
 
-import ca.uhn.fhir.rest.annotation.*;
+import ca.uhn.fhir.rest.annotation.Create;
+import ca.uhn.fhir.rest.annotation.IdParam;
+import ca.uhn.fhir.rest.annotation.Read;
+import ca.uhn.fhir.rest.annotation.ResourceParam;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.server.IResourceProvider;
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Binary;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Id;
 import org.springframework.stereotype.Component;
 import rs.ac.uns.ftn.fhir.fhir_server.repository.BinaryRepository;
 import rs.ac.uns.ftn.fhir.fhir_server.util.ImageUtil;
 
-import java.util.Date;
-
-/**
- * This is a resource provider which stores Patient resources in memory using a HashMap. This is obviously not a production-ready solution for many reasons,
- * but it is useful to help illustrate how to build a fully-functional server.
- */
 @Component
 public class BinaryProvider implements IResourceProvider {
 
@@ -32,7 +30,7 @@ public class BinaryProvider implements IResourceProvider {
     }
 
     @Create
-    public MethodOutcome createBinary(@ResourceParam Binary binary) {
+    public MethodOutcome createBinary(@ResourceParam Binary binary) throws Exception {
 
         log.debug("Create Patient Provider called");
 
@@ -43,27 +41,30 @@ public class BinaryProvider implements IResourceProvider {
         method.setOperationOutcome(opOutcome);
         boolean uploaded = false;
         try {
-            System.out.println("input id: " + binary.getId());
             System.out.println("input content type: " + binary.getContentType());
 
             String binaryId = Long.toString(System.currentTimeMillis());
 
             String fileType = binary.getContentType();
             String fileName = binaryId + "." + fileType;
-            uploaded = ImageUtil.uploadImage(binary.getContent(), fileName, fileType);
-            binary.setIdElement(new IdType(binaryId));
+            if(ImageUtil.uploadImage(binary.getContent(), fileName, fileType)){
+                binary.setIdElement(new IdType(binaryId));
 
-            Binary binaryCreated = binaryRepository.create(binary);
+                Binary binaryCreated = binaryRepository.create(binary);
 
-            method.setId(new IdType(binaryCreated.getId()));
-            method.setResource(binary);
+                method.setId(new IdType(binaryCreated.getId()));
+                method.setResource(binary);
+
+                log.debug("called create Patient method");
+
+                return method;
+            } else {
+                throw new Exception("UploadImage has failed");
+            }
         } catch (Exception ex) {
             log.error(ex.getMessage());
+            throw new Exception(ex.getMessage());
         }
-
-        log.debug("called create Patient method");
-
-        return method;
     }
 
     @Read(version = true)

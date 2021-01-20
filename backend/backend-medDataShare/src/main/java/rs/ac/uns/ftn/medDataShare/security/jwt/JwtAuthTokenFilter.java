@@ -1,6 +1,5 @@
 package rs.ac.uns.ftn.medDataShare.security.jwt;
 
-
 import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +50,6 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-
     }
 
     private String getJwt(HttpServletRequest request) {

@@ -9,20 +9,15 @@ import MenuState from "../constants/MenuState";
 import UserRole from '../constants/UserRole';
 
 import HomeIcon from '@material-ui/icons/Home';
-import SendIcon from '@material-ui/icons/Send';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
 import AddIcon from '@material-ui/icons/Add';
 import PersonIcon from '@material-ui/icons/Person';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
-import AccountBoxIcon from '@material-ui/icons/AccountBox';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import ViewListIcon from '@material-ui/icons/ViewList';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 
 import { 
-    Drawer, IconButton, Collapse, 
+    Drawer, IconButton, 
     List, ListItem, ListItemIcon, ListItemText
 } from "@material-ui/core";
 
@@ -34,10 +29,10 @@ class Navigation extends Component {
         },
         {
             path: '/profile', icon: <PersonIcon />, text: strings.menu.Profile
-        },
-        {
-            path: '/notifications', icon: <NotificationsIcon />, text: strings.menu.Notifications
         }
+        // ,{
+        //     path: '/notifications', icon: <NotificationsIcon />, text: strings.menu.Notifications
+        // }
     ]
 
     navItemsUser = [
@@ -168,29 +163,6 @@ class Navigation extends Component {
                         {
                             this.navItems.map((navItem, index) => this.renderNavItem(navItem, index))
                         }
-                        <ListItem className='navigation-item' button onClick={() => this.toggleSubmenu('example')} >
-
-                            <ListItemIcon className='navigation-icon'>
-                                <AccountBoxIcon />
-                            </ListItemIcon>
-
-                            <ListItemText inset primary={strings.profile.other} className='navigation-text' />
-                            {this.state.submenu.example ? <ExpandLess className='navigation-icon' /> : <ExpandMore className='navigation-icon' />}
-                        </ListItem>
-                        <Collapse in={this.state.submenu.example} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding className='submenu'>
-                                <Link to={'/'} className={this.isCurrentPath('/') ? 'navigation-link active' : 'navigation-link'} >
-                                    <ListItem className='navigation-item'>
-                                        <ListItemIcon className='navigation-icon'>
-                                            <SendIcon />
-                                        </ListItemIcon>
-                                        <ListItemText inset primary='Sent mail' className='navigation-text' />
-                                    </ListItem>
-                                </Link>
-                                
-                            </List>
-                        </Collapse>
-
                     </List>
                 </div>
 

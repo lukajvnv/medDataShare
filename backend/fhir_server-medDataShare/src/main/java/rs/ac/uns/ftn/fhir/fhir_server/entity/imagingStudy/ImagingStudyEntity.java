@@ -1,16 +1,11 @@
-
 package rs.ac.uns.ftn.fhir.fhir_server.entity.imagingStudy;
 
 import lombok.*;
 import org.bson.types.ObjectId;
-import org.hl7.fhir.r4.model.Enumerations;
 import org.hl7.fhir.r4.model.ImagingStudy;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import rs.ac.uns.ftn.fhir.fhir_server.entity.Address;
 import rs.ac.uns.ftn.fhir.fhir_server.entity.Identifier;
-import rs.ac.uns.ftn.fhir.fhir_server.entity.Name;
-import rs.ac.uns.ftn.fhir.fhir_server.entity.Telecom;
 
 import java.util.Collection;
 import java.util.Date;
