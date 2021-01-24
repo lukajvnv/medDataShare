@@ -12,22 +12,6 @@ public class CustomPatientSearchNarrowingInterceptor extends SearchNarrowingInte
      */
     @Override
     protected AuthorizedList buildAuthorizedList(RequestDetails theRequestDetails) {
-//        String authHeader = theRequestDetails.getHeader("Authorization");
-//        if ("Bearer dfw98h38r".equals(authHeader)) {
-//
-//            // This user will have access to two compartments
-//            return new AuthorizedList()
-//                    .addCompartment("Patient/123")
-//                    .addCompartment("Patient/456");
-//
-//        } else if ("Bearer 39ff939jgg".equals(authHeader)) {
-//
-//            // This user has access to everything
-//            return new AuthorizedList();
-//
-//        } else {
-//            throw new AuthenticationException("Unknown bearer token");
-//        }
         return new AuthorizedList();
     }
 }

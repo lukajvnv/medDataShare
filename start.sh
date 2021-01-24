@@ -22,9 +22,9 @@ function startAsCustomUser(){
 }
 
 function startFhirServer(){
-  startAsCustomUser
+  #startAsCustomUser
   
-  #gnome-terminal --tab -- /bin/bash -c "cd $FHIR_SERVER_ROOT; ./fhir_server_start.sh; read"
+  gnome-terminal --tab -- /bin/bash -c "cd $FHIR_SERVER_ROOT; ./fhir_server_start.sh; read"
 }
 
 function startNetwork(){

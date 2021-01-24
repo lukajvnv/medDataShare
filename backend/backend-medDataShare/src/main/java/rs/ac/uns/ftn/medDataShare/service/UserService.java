@@ -1,5 +1,6 @@
 package rs.ac.uns.ftn.medDataShare.service;
 
+import org.hl7.fhir.r4.model.Binary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,9 +28,11 @@ import rs.ac.uns.ftn.medDataShare.repository.MedInstitutionRepository;
 import rs.ac.uns.ftn.medDataShare.repository.MedWorkerRepository;
 import rs.ac.uns.ftn.medDataShare.security.service.UserDetailsServiceImpl;
 import rs.ac.uns.ftn.medDataShare.util.Constants;
+import rs.ac.uns.ftn.medDataShare.util.PdfExporter;
 import rs.ac.uns.ftn.medDataShare.util.StringUtil;
 import rs.ac.uns.ftn.medDataShare.validator.AuthException;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -72,6 +75,9 @@ public class UserService {
 
     @Autowired
     private FhirService fhirService;
+
+    @Autowired
+    private SymmetricCryptography symmetricCryptography;
 
     public UserDto getCurrentUser(){
         User user = (User) userDetailsService.getLoggedUser();
@@ -168,12 +174,26 @@ public class UserService {
         }
     }
 
+    public byte[] exportInPdf(String clinicalTrialId) {
+        ClinicalTrialDto clinicalTrialDto = fhirService.getImagingStudy(clinicalTrialId);
+        clinicalTrialDto = anonymizeData(clinicalTrialDto);
+        try {
+            Binary binary = fhirService.getBinary(clinicalTrialDto.getResourcePath());
+
+            return PdfExporter.clinicalTrialExportPdf(clinicalTrialDto, binary);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public MedInstitutionDto convert(MedInstitution medInstitution){
         return medInstitutionConverter.convertToDto(medInstitution);
     }
 
-    public ClinicalTrialDto anonymizeData(ClinicalTrialDto clinicalTrialDto){
-        User patient = commonUserRepository.getOne(clinicalTrialDto.getPatient());
+    private ClinicalTrialDto anonymizeData(ClinicalTrialDto clinicalTrialDto){
+        String patientId = symmetricCryptography.getInfoFromDb(clinicalTrialDto.getPatient());
+        User patient = commonUserRepository.getOne(patientId);
         String patientFirstName = patient.getFirstName();
         String patientLastName = patient.getLastName();
         String anonymizeIntroduction = StringUtil.anonymizePatientData(clinicalTrialDto.getIntroduction(), patientFirstName, patientLastName);

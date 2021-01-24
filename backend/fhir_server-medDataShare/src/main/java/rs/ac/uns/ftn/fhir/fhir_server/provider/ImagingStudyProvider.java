@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import rs.ac.uns.ftn.fhir.fhir_server.repository.declaration.IImagingStudyRepository;
-import rs.ac.uns.ftn.fhir.fhir_server.util.JwtProvider;
 
 import java.util.List;
 
@@ -26,9 +25,6 @@ public class ImagingStudyProvider implements IResourceProvider {
 
     @Autowired
     IImagingStudyRepository imagingStudyRepository;
-
-    @Autowired
-    JwtProvider jwtProvider;
 
     private static final Logger log = LoggerFactory.getLogger(ImagingStudyProvider.class);
 
@@ -50,7 +46,7 @@ public class ImagingStudyProvider implements IResourceProvider {
 
         try {
             ImagingStudy mongoImagingStudy = imagingStudyRepository.create(imagingStudy);
-            log.info("mongoImagingStudy.getIdElement().toString(): " + mongoImagingStudy.getIdElement().toString());
+            log.info("location: {},  patient: {}", mongoImagingStudy.getId(), mongoImagingStudy.getSubject().getReference());
             method.setId(mongoImagingStudy.getIdElement());
             method.setResource(mongoImagingStudy);
         } catch (Exception ex) {
@@ -69,7 +65,7 @@ public class ImagingStudyProvider implements IResourceProvider {
         MethodOutcome method = new MethodOutcome();
         method.setCreated(false);
         ImagingStudy mongoImagingStudy = imagingStudyRepository.update(imagingStudy);
-        log.info("mongoImagingStudy.getIdElement().toString(): " + mongoImagingStudy.getIdElement().toString());
+        log.info("location: {},  patient: {}", mongoImagingStudy.getId(), mongoImagingStudy.getSubject().getReference());
         method.setId(mongoImagingStudy.getIdElement());
         method.setResource(mongoImagingStudy);
         return method;
@@ -91,16 +87,14 @@ public class ImagingStudyProvider implements IResourceProvider {
 
     @Read
     public ImagingStudy readImagingStudy(RequestDetails requestDetails, @IdParam IdType internalId) throws Exception {
-        String cookieHeader = requestDetails.getHeader(Constants.HEADER_COOKIE);
-        jwtProvider.validateJwtToken(cookieHeader);
-
+        log.info("AccessToClinicalTrial....");
         ImagingStudy imagingStudy = imagingStudyRepository.read(internalId);
+        log.info("location: {},  patient: {}", imagingStudy.getId(), imagingStudy.getSubject().getReference());
         return imagingStudy;
     }
 
     @Search
     public List<Resource> searchImagingStudy(
-            @OptionalParam(name = ImagingStudy.SP_STARTED) DateParam started,
             @OptionalParam(name= ImagingStudy.SP_STATUS) StringParam status,
             @OptionalParam(name = ImagingStudy.SP_SUBJECT) StringParam subject
     ) {

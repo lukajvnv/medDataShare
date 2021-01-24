@@ -57,20 +57,23 @@ public class ClinicalTrialContract implements ContractInterface {
         System.out.println();
         System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> BEGIN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         LOG.info(String.format("Function name: %s, params: [%s]", function, params));
+        clientIdentityInfo(ctx);
     }
 
     private void clientIdentityInfo(final Context ctx){
-        ByteString signature = ctx.getStub().getSignedProposal().getSignature();
-        String clientIdentityId = ctx.getClientIdentity().getId();
-        String clientIdentityMspId = ctx.getClientIdentity().getMSPID();
-        byte[] c = ctx.getStub().getCreator();
-        LOG.info(String.format(", clientIdentityId: %s, clientIdentityMspId: %s", clientIdentityId, clientIdentityMspId));
-    }
+//        ByteString signature = ctx.getStub().getSignedProposal().getSignature();
+//        byte[] c = ctx.getStub().getCreator();
+        try {
+            String userIdentityId = ctx.getClientIdentity().getAttributeValue("userIdentityId");
+            String clientIdentityId = ctx.getClientIdentity().getId();
+            String clientIdentityMspId = ctx.getClientIdentity().getMSPID();
+            LOG.info(String.format("clientIdentityId: %s, clientIdentityMspId: %s, userIdentityId: %s", clientIdentityId, clientIdentityMspId, userIdentityId));
+        } catch (Exception e) {
+            String errorMessage = "Error during method ctx.getClientIdentity.getAttributeValue(...)";
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
+        }
 
-    private static void setStateBasedEndorsement(final Context ctx, final String assetId, final String[] ownerOrgs) {
-        StateBasedEndorsement stateBasedEndorsement = StateBasedEndorsementFactory.getInstance().newStateBasedEndorsement(null);
-        stateBasedEndorsement.addOrgs(StateBasedEndorsement.RoleType.RoleTypeMember, ownerOrgs);
-        ctx.getStub().setStateValidationParameter(assetId, stateBasedEndorsement.policy());
     }
 
     @Override

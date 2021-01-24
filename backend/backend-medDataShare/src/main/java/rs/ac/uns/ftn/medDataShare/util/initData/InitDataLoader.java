@@ -1,9 +1,5 @@
 package rs.ac.uns.ftn.medDataShare.util.initData;
 
-
-import ca.uhn.fhir.rest.client.api.IGenericClient;
-import org.bouncycastle.util.encoders.Hex;
-import org.hl7.fhir.r4.model.ImagingStudy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -55,9 +51,6 @@ public class InitDataLoader implements CommandLineRunner {
     private AdminRepository adminRepository;
 
     @Autowired
-    private ClinicalTrialRepository clinicalTrialRepository;
-
-    @Autowired
     private HyperledgerService hyperledgerService;
 
     @Autowired
@@ -67,53 +60,15 @@ public class InitDataLoader implements CommandLineRunner {
     private LoadDataValues loadDataValues;
 
     @Autowired
-    private IGenericClient client;
-
-    @Autowired
     private SymmetricCryptography symmetricCryptography;
 
     private final static Logger LOG = Logger.getLogger(InitDataLoader.class.getName());
 
     @Override
     public void run(String... args) throws Exception {
-//        encryption();
         initInstitutions();
         initUsers();
         initClinicalTrials();
-    }
-
-    private void encryption() {
-//        KeyStoreHelper helper = new KeyStoreHelper();
-//        SymmetricCryptography crypto = new SymmetricCryptography();
-//        helper.loadKeyStore("src/main/resources/med_data_share.jks", "medDataShare".toCharArray());
-//        SecretKey key = crypto.generateKey();
-//        PrivateKey privateKey= helper.readPrivateKey("meddatashare", "medDataShare");
-//        Certificate certificate = helper.readCertificate( "meddatasharecer");
-//
-//        System.out.println("\n===== Generisanje kljuca =====");
-//        String data = "Luka 2903 Jovanovic";
-//        System.out.println("Generisan kljuc: " + Hex.toHexString(key.getEncoded()));
-//        byte[] encoded =  helper.encrypt(key.getEncoded(), certificate.getPublicKey());
-//        System.out.println("Enkriptovan kljuc: " + Hex.toHexString(encoded));
-//        byte[] decoded = helper.decrypt(encoded, privateKey);
-//        SecretKey originalKey = new SecretKeySpec(decoded, 0, decoded.length, "AES");
-//
-//        System.out.println("Dekriptovan klju: " + Hex.toHexString(decoded));
-//        System.out.println("Dekriptovan kljuc[byte]: " + decoded);
-
-        String data = "Luka 2903 Jovanovic";
-        String hexEncryptedData = symmetricCryptography.putInfoInDb(data);
-        String decryptedData = symmetricCryptography.getInfoFromDb(hexEncryptedData);
-        System.out.println(String.format("originalData: %s, hexEncryptedData: %s, decryptedData: %s", data, hexEncryptedData, decryptedData));
-    }
-
-    private void invokeClinicalTrial(){
-        String id = "60057b2f9f310620f22f4e24";
-        // Read a patient with the given ID
-        ImagingStudy imagingStudy = client.read().resource(ImagingStudy.class).withId(id).execute();
-
-        // Print the output
-        System.out.println("string");
     }
 
     private void initInstitutions(){
@@ -255,16 +210,14 @@ public class InitDataLoader implements CommandLineRunner {
         adminRepository.save(admin);
 
         try {
-            RegisterUserHyperledger.enrollOrgAppUser(commonUser1.getEmail(), Config.COMMON_USER_ORG, commonUser1.getId());
-            RegisterUserHyperledger.enrollOrgAppUser(commonUser2.getEmail(), Config.COMMON_USER_ORG, commonUser2.getId());
-            RegisterUserHyperledger.enrollOrgAppUser(commonUser3.getEmail(), Config.COMMON_USER_ORG, commonUser3.getId());
-            RegisterUserHyperledger.enrollOrgAppUser(medWorker1.getEmail(), medInstitution1.getMembershipOrganizationId(), medWorker1.getId());
-            RegisterUserHyperledger.enrollOrgAppUser(medWorker2.getEmail(), medInstitution2.getMembershipOrganizationId(), medWorker2.getId());
-
+            RegisterUserHyperledger.enrollOrgAppUser(commonUser1.getEmail(), Config.COMMON_USER_ORG, symmetricCryptography.putInfoInDb(commonUser1.getId()));
+            RegisterUserHyperledger.enrollOrgAppUser(commonUser2.getEmail(), Config.COMMON_USER_ORG, symmetricCryptography.putInfoInDb(commonUser2.getId()));
+            RegisterUserHyperledger.enrollOrgAppUser(commonUser3.getEmail(), Config.COMMON_USER_ORG, symmetricCryptography.putInfoInDb(commonUser3.getId()));
+            RegisterUserHyperledger.enrollOrgAppUser(medWorker1.getEmail(), medInstitution1.getMembershipOrganizationId(), symmetricCryptography.putInfoInDb(medWorker1.getId()));
+            RegisterUserHyperledger.enrollOrgAppUser(medWorker2.getEmail(), medInstitution2.getMembershipOrganizationId(), symmetricCryptography.putInfoInDb(medWorker2.getId()));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     private void initClinicalTrials() throws Exception {
@@ -277,8 +230,8 @@ public class InitDataLoader implements CommandLineRunner {
             User patientUser = commonUserRepository.findByUsername(patientId);
             User doctorUser = medWorkerRepository.findByUsername(doctorId);
 
-            String patient = patientUser.getId();
-            String doctor = doctorUser.getId();
+            String patient = symmetricCryptography.putInfoInDb(patientUser.getId());
+            String doctor = symmetricCryptography.putInfoInDb(doctorUser.getId());
 
             String contentType = dataValue.getContentType();
             byte[] fileContent = ImageUtil.getBytes(dataValue.getContentName());

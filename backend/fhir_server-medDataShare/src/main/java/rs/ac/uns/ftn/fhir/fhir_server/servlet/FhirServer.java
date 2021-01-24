@@ -26,7 +26,6 @@ import java.util.TimeZone;
 public class FhirServer extends RestfulServer {
 
 	private static final long serialVersionUID = 1L;
-	private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(FhirServer.class);
 
 	private ApplicationContext applicationContext;
 
@@ -73,7 +72,7 @@ public class FhirServer extends RestfulServer {
 
 		// triggers on search operation
 		registerInterceptor(new CustomPatientSearchNarrowingInterceptor());
-		registerInterceptor(new CustomServerAuthorizationInterceptor());
+		registerInterceptor(applicationContext.getBean(CustomServerAuthorizationInterceptor.class));
 		registerInterceptor(new LoggingInterceptor());
 		registerInterceptor(new CustomServerInterceptor());
 

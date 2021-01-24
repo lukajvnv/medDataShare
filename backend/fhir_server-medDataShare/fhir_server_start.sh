@@ -6,6 +6,6 @@ export DB_USER_DB=admin
 export DB_USER_PASS=x594VybYG45XWsNQ
 
 mvn clean
-mvn package
+mvn package -Dmaven.test.skip=true
 
 java -jar target/fhir_server-0.0.1-SNAPSHOT.jar

@@ -32,6 +32,9 @@ public class CommonUserService implements UserInterface<CommonUser, CommonUserDt
     @Autowired
     private HyperledgerService hyperledgerService;
 
+    @Autowired
+    private SymmetricCryptography symmetricCryptography;
+
     @Override
     public CommonUserDto editUser(CommonUserDto object) {
         CommonUser commonUser = commonUserConverter.convertFromDto(object, true);
@@ -40,18 +43,21 @@ public class CommonUserService implements UserInterface<CommonUser, CommonUserDt
 
     public List<ClinicalTrialDto> getUserClinicalTrials(){
         User user = (User) userDetailsService.getLoggedUser();
-        return fhirService.searchImagingStudy(user.getId(), false);
+        String userId = symmetricCryptography.putInfoInDb(user.getId());
+        return fhirService.searchImagingStudy(userId, false);
     }
 
     public List<ClinicalTrialDto> getUserClinicalTrialsDefineAccess(){
         User user = (User) userDetailsService.getLoggedUser();
-        return fhirService.searchImagingStudy(user.getId(), true);
+        String userId = symmetricCryptography.putInfoInDb(user.getId());
+        return fhirService.searchImagingStudy(userId, true);
     }
 
     public ClinicalTrialDto updateClinicalTrial(EditClinicalTrialForm editClinicalTrialForm) throws Exception {
         User user = (User) userDetailsService.getLoggedUser();
         ClinicalTrialDto clinicalTrialBefore = fhirService.getImagingStudy(editClinicalTrialForm.getId());
-        ClinicalTrialDto clinicalTrial = fhirService.updateClinicalTrial(user.getId(), editClinicalTrialForm);
+        String userId = symmetricCryptography.putInfoInDb(user.getId());
+        ClinicalTrialDto clinicalTrial = fhirService.updateClinicalTrial(userId, editClinicalTrialForm);
         hyperledgerService.defineClinicalTrialAccess(user, clinicalTrial, clinicalTrialBefore);
         return clinicalTrial;
     }

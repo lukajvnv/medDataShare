@@ -1,10 +1,14 @@
 package rs.ac.uns.ftn.medDataShare.service;
 
+import lombok.SneakyThrows;
 import org.bouncycastle.util.encoders.Hex;
 import org.hyperledger.fabric.gateway.Contract;
 import org.hyperledger.fabric.gateway.Gateway;
 import org.hyperledger.fabric.gateway.Identity;
 import org.hyperledger.fabric.gateway.Network;
+import org.hyperledger.fabric.sdk.BlockEvent;
+import org.hyperledger.fabric.sdk.Channel;
+import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rs.ac.uns.ftn.medDataShare.chaincode.Config;
@@ -32,6 +36,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 @Service
@@ -44,7 +49,7 @@ public class HyperledgerService {
 
     private Contract getContract(User user) throws Exception {
         String userWalletIdentity = user.getEmail();
-        String userIdentity = user.getId();
+        String userIdentity = symmetricCryptography.putInfoInDb(user.getId());
 
         String org = determineOrg(user);
         Map<String, String> connectionConfigParams = ConnectionParamsUtil.setOrgConfigParams(org);
@@ -52,7 +57,32 @@ public class HyperledgerService {
 
         Gateway gateway = connect(userWalletIdentity, connectionProfilePath, userIdentity, org);
         Network network = gateway.getNetwork(Config.CHANNEL_NAME);
-        return network.getContract(Config.CHAINCODE_NAME);
+        Contract contract = network.getContract(Config.CHAINCODE_NAME);
+//        registerListener(network, network.getChannel(), contract);
+        return contract;
+    }
+
+    public static void registerListener(Network network, Channel channel, Contract contract) throws InvalidArgumentException {
+        Consumer<BlockEvent> e = new Consumer<BlockEvent>() {
+            @SneakyThrows
+            @Override
+            public void accept(BlockEvent blockEvent) {
+                long bN = blockEvent.getBlockNumber();
+                System.out.println("network blockListener" + bN);
+                for(BlockEvent.TransactionEvent transactionEvent : blockEvent.getTransactionEvents()){
+                    String mspId = transactionEvent.getCreator().getMspid();
+                    String peer = transactionEvent.getPeer().getName();
+                    System.out.println(String.format("[NetworkBlockEventListener] transactionEventId: %s, creatorMspId: %s, peer: %s", transactionEvent.getTransactionID(), mspId, peer));
+                }
+            }
+
+            @Override
+            public Consumer<BlockEvent> andThen(Consumer<? super BlockEvent> after) {
+                System.out.println("done accept event op");
+                return null;
+            }
+        };
+        network.addBlockListener(e);
     }
 
     private Gateway connect(String userWalletIdentity, String connectionProfilePath, String userIdentity, String org) throws Exception {
@@ -176,8 +206,8 @@ public class HyperledgerService {
         try {
             Contract contract = getContract(user);
             String clinicalTrialId = clinicalTrialAccessSendRequestForm.getClinicalTrial();
-            String requesterId = clinicalTrialAccessSendRequestForm.getSender();
             String patient = clinicalTrialAccessSendRequestForm.getPatient();
+            String requesterId = symmetricCryptography.putInfoInDb(clinicalTrialAccessSendRequestForm.getSender());
             String time = StringUtil.parseDate(clinicalTrialAccessSendRequestForm.getTime());
             LOG.info(String.format("Submit Transaction: sendAccessRequest(%s, %s, %s, %s)", patient, time, requesterId, clinicalTrialId));
             byte[] result = contract.submitTransaction(
@@ -231,7 +261,7 @@ public class HyperledgerService {
         try {
             contract = getContract(user);
             String invocationMethodName = determineInvocationMethodName(requestType);
-            String userId = user.getId();
+            String userId = symmetricCryptography.putInfoInDb(user.getId());
             byte[] result = contract.evaluateTransaction(invocationMethodName, userId);
             LOG.info(String.format("Evaluate Transaction: %s(%s)", invocationMethodName, userId));
             ClinicalTrialsAccessRequestResponse clinicalTrialsAccessRequestResponse = ClinicalTrialsAccessRequestResponse.deserialize(result);
@@ -344,7 +374,6 @@ public class HyperledgerService {
     private void formatExceptionMessage(Exception e) throws Exception{
         String msg= e.getMessage();
         String errorMsg = msg.substring(msg.lastIndexOf(":")+1);
-        String localizedMsg = e.getLocalizedMessage();
         throw new Exception(errorMsg);
     }
 

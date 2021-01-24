@@ -28,11 +28,6 @@ public class MongoConfig {
         String DB_USER_DB = environment.getProperty("DB_USER_DB");
         String DB_USER_PASS = environment.getProperty("DB_USER_PASS");
 
-        System.out.println("DB_URL:" + environment.getProperty("DB_URL"));
-        System.out.println("DB_USER_NAME:" + DB_USER_NAME);
-        System.out.println("DB_USER_DB:" + DB_USER_DB);
-        System.out.println("DB_USER_PASS:" + DB_USER_PASS);
-
         MongoCredential mongoCredential = MongoCredential.createCredential(
                 DB_USER_NAME,
                 DB_USER_DB,

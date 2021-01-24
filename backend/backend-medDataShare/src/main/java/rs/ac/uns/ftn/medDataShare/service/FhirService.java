@@ -13,7 +13,9 @@ import rs.ac.uns.ftn.medDataShare.converter.ClinicalTrialConverter;
 import rs.ac.uns.ftn.medDataShare.dto.form.ClinicalTrialForm;
 import rs.ac.uns.ftn.medDataShare.dto.form.EditClinicalTrialForm;
 import rs.ac.uns.ftn.medDataShare.dto.medInstitution.ClinicalTrialDto;
+import rs.ac.uns.ftn.medDataShare.model.user.User;
 import rs.ac.uns.ftn.medDataShare.util.PdfExporter;
+import rs.ac.uns.ftn.medDataShare.util.StringUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,30 +30,6 @@ public class FhirService {
 
     @Autowired
     private ClinicalTrialConverter clinicalTrialConverter;
-
-    public byte[] exportInPdf(String clinicalTrialId) {
-        ClinicalTrialDto clinicalTrialDto = getImagingStudy(clinicalTrialId);
-        try {
-            Binary binary = getBinary(clinicalTrialDto.getResourcePath());
-
-            return PdfExporter.clinicalTrialExportPdf(clinicalTrialDto, binary);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public byte[] getImage() {
-        Binary binary = fhirClient
-                .read()
-                .resource(Binary.class)
-                .withId("1124683")
-                .execute();
-
-        byte[] bytes = binary.getContent();
-
-        return bytes;
-    }
 
     public byte[] getImage(String binaryId) {
         Binary binary = fhirClient
@@ -164,7 +142,8 @@ public class FhirService {
         ImagingStudy imagingStudy = fhirClient
                 .read()
                 .resource(ImagingStudy.class)
-                .withId(imagingStudyId).execute();
+                .withId(imagingStudyId)
+                .execute();
 
         return clinicalTrialConverter.convertToDto(imagingStudy);
     }
@@ -177,7 +156,7 @@ public class FhirService {
         return binary;
     }
 
-    private Binary getBinary(String binaryId) throws IOException {
+    public Binary getBinary(String binaryId) throws IOException {
         try {
             Binary binary = fhirClient
                     .read()

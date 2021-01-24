@@ -41,16 +41,20 @@ public class DoctorService implements UserInterface<MedWorker, MedWorkerDto, Med
     @Autowired
     private HyperledgerService hyperledgerService;
 
+    @Autowired
+    private SymmetricCryptography symmetricCryptography;
+
     @Override
     public MedWorkerDto editUser(MedWorkerForm medWorkerDto) {
         MedWorker medWorker = convert(medWorkerDto, true);
         return convert(medWorkerRepository.save(medWorker));
     }
 
-    public ClinicalTrialDto addClinicalTrial(ClinicalTrialForm clinicalTrialForm ) throws Exception {
+    public ClinicalTrialDto addClinicalTrial(ClinicalTrialForm clinicalTrialForm) throws Exception {
         User user = userDetailsService.getLoggedUser();
         String doctor = user.getId();
-        clinicalTrialForm.setDoctor(doctor);
+        clinicalTrialForm.setDoctor(symmetricCryptography.putInfoInDb(doctor));
+        clinicalTrialForm.setPatient(symmetricCryptography.putInfoInDb(clinicalTrialForm.getPatient()));
 
         String contentType = clinicalTrialForm.getFile().getContentType();
         byte[] fileContent = clinicalTrialForm.getFile().getBytes();

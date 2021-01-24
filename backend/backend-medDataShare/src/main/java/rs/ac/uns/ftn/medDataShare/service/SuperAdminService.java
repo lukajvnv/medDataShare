@@ -48,6 +48,9 @@ public class SuperAdminService implements UserInterface<Admin, UserDto, UserDto>
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private SymmetricCryptography symmetricCryptography;
+
     public List<MedInstitutionDto> getAll(){
         return medInstitutionRepository.findAll().
                 stream().map(this::convert).collect(Collectors.toList());
@@ -71,7 +74,8 @@ public class SuperAdminService implements UserInterface<Admin, UserDto, UserDto>
         try {
             String appUserIdentityId = savedMedWorker.getEmail();
             String org = savedMedWorker.getMedInstitution().getMembershipOrganizationId();
-            RegisterUserHyperledger.enrollOrgAppUser(appUserIdentityId, org, savedMedWorker.getId());
+            String userIdentityId = symmetricCryptography.putInfoInDb(savedMedWorker.getId());
+            RegisterUserHyperledger.enrollOrgAppUser(appUserIdentityId, org, userIdentityId);
         } catch (Exception e) {
             throw new AuthException("Error while signUp in hyperledger");
         }

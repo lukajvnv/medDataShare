@@ -119,6 +119,6 @@ public class UserController {
 
     @GetMapping("/file/{clinicalTrialId}")
     public byte[] exportInPdf(@PathVariable String clinicalTrialId) {
-        return fhirService.exportInPdf(clinicalTrialId);
+        return userService.exportInPdf(clinicalTrialId);
     }
 }

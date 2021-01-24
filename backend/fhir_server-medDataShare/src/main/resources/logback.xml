@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+	<contextName>Fhir server</contextName>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+           <!-- <onMatch>DENY</onMatch> -->
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+           <!-- <onMatch>DENY</onMatch> -->
+        </filter>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M\(%line\) - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+	<timestamp key="byDay" datePattern="yyyyMMdd'T'hhmmss" />
+    <appender name="STDERR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<file>logs/errorFile.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	      <fileNamePattern>logs/errorFile.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+	      <timeBasedFileNamingAndTriggeringPolicy
+	      	class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+	        <maxFileSize>10MB</maxFileSize>
+	      </timeBasedFileNamingAndTriggeringPolicy>
+	      <maxHistory>30</maxHistory>
+    	</rollingPolicy>
+    	<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>%contextName | %d{yyyy-MM-dd HH:mm:ss.SSS} | %logger{0} | %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="STDWARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<file>logs/warningFile.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	      <fileNamePattern>logs/warningFile.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+	      <timeBasedFileNamingAndTriggeringPolicy
+	      	class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+	        <maxFileSize>10MB</maxFileSize>
+	      </timeBasedFileNamingAndTriggeringPolicy>
+	      <maxHistory>30</maxHistory>
+    	</rollingPolicy>
+    	<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <encoder>
+            <pattern>%contextName | %d{yyyy-MM-dd HH:mm:ss.SSS} | %logger{0} | %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="STDINFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    	<file>logs/infoFile.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	      <fileNamePattern>logs/infoFile.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+	      <timeBasedFileNamingAndTriggeringPolicy
+	        class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+	      	<maxFileSize>10MB</maxFileSize>
+	      </timeBasedFileNamingAndTriggeringPolicy>
+	      <maxHistory>30</maxHistory>
+    	</rollingPolicy>
+    	<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch>
+        </filter>
+         <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>DENY</onMatch>
+        </filter>
+        <encoder>
+            <pattern>%contextName | %d{yyyy-MM-dd HH:mm:ss.SSS} | %logger{0} | %msg%n
+            </pattern>
+        </encoder>
+    </appender> 
+
+	 <logger name="rs.ac.uns.ftn.fhir.fhir_server" level="trace" additivity="false" >
+  		<appender-ref ref="STDERR" />
+  		<appender-ref ref="STDWARN" />
+  		<appender-ref ref="STDINFO" />
+  		<appender-ref ref="STDOUT" />
+	</logger> 
+
+</configuration>

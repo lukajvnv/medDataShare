@@ -23,6 +23,7 @@ import rs.ac.uns.ftn.medDataShare.security.jwt.JwtProvider;
 import rs.ac.uns.ftn.medDataShare.security.dto.JwtResponse;
 import rs.ac.uns.ftn.medDataShare.security.dto.SignInDto;
 import rs.ac.uns.ftn.medDataShare.security.service.UserDetailsServiceImpl;
+import rs.ac.uns.ftn.medDataShare.service.SymmetricCryptography;
 import rs.ac.uns.ftn.medDataShare.util.Constants;
 import rs.ac.uns.ftn.medDataShare.validator.AuthException;
 
@@ -49,6 +50,9 @@ public class AuthRestAPIs {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
+    @Autowired
+    private SymmetricCryptography symmetricCryptography;
+
     @PostMapping(value = "/signUp")
     public String signUp(@Valid @RequestBody SignUpDto signUpForm, BindingResult result){
         if(result.hasErrors()){
@@ -74,7 +78,8 @@ public class AuthRestAPIs {
                 .build();
         CommonUser saved = commonUserRepository.save(commonUser);
         try {
-            RegisterUserHyperledger.enrollOrgAppUser(saved.getEmail(), Config.COMMON_USER_ORG, saved.getId());
+            String userIdentityId = symmetricCryptography.putInfoInDb(saved.getId());
+            RegisterUserHyperledger.enrollOrgAppUser(saved.getEmail(), Config.COMMON_USER_ORG, userIdentityId);
         } catch (Exception e) {
             throw new AuthException("Error while signUp in hyperledger");
         }

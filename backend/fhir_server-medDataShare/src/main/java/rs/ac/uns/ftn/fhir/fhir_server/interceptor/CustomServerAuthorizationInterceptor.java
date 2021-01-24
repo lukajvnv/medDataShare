@@ -2,47 +2,42 @@ package rs.ac.uns.ftn.fhir.fhir_server.interceptor;
 
 import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.interceptor.auth.AuthorizationInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.auth.IAuthRule;
 import ca.uhn.fhir.rest.server.interceptor.auth.RuleBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import rs.ac.uns.ftn.fhir.fhir_server.util.JwtProvider;
 
 import java.util.List;
-import java.util.Map;
 
+@Component
 public class CustomServerAuthorizationInterceptor extends AuthorizationInterceptor {
+
+    @Autowired
+    JwtProvider jwtProvider;
+
+    private static final Logger log = LoggerFactory.getLogger(CustomServerAuthorizationInterceptor.class);
 
     @Override
     public List<IAuthRule> buildRuleList(RequestDetails theRequestDetails) {
-        // Process this header
-        String authHeader = theRequestDetails.getHeader(Constants.HEADER_AUTHORIZATION);
-        String cookieHeader = theRequestDetails.getHeader(Constants.HEADER_COOKIE);
-        String operation = theRequestDetails.getOperation();
-        Map<String, String[]> params = theRequestDetails.getParameters();
-        theRequestDetails.getRequestId();
-        String requestPath = theRequestDetails.getRequestPath();
-
-
-
-        RuleBuilder builder = new RuleBuilder();
-//        return builder
-//                .allowAll()
-////                .allow().metadata().andThen()
-////                .allow().read().allResources().withAnyId().andThen()
-////                .allow().write().resourcesOfType(Observation.class)
-////                .inCompartment("Patient", new IdType("Patient/123"))
-//        .build()
-//        ;
-
-//        AuthenticationException ex = new AuthenticationException("Missing or invalid Authorization header value");
-//        ex.addAuthenticateHeaderForRealm("myRealm");
-//        throw ex;
+        try {
+            String cookieToken = theRequestDetails.getHeader(Constants.HEADER_COOKIE);
+            jwtProvider.validateJwtToken(cookieToken);
+            String requestUser = jwtProvider.getUserNameFromJwtToken(cookieToken);
+            String id = theRequestDetails.getRequestId();
+            String requestPath = theRequestDetails.getRequestPath();
+            String requestType = theRequestDetails.getRequestType().toString();
+            log.info("requestId: {},  requestPath: {}, requestType: {}, requestUser: {}", id, requestPath, requestType, requestUser);
+        } catch (Exception e){
+            AuthenticationException ex = new AuthenticationException("AuthorizationError");
+            ex.addAuthenticateHeaderForRealm("myRealm");
+            throw ex;
+        }
 
         return new RuleBuilder().allowAll().build();
-//        return new RuleBuilder().denyAll().build();
-//          return new RuleBuilder().deny().write().allResources().withAnyId()
-//                .build();
-//          return new RuleBuilder().deny().write().resourcesOfType(Patient.class).withAnyId().andThen().allowAll().build();
-//          return new RuleBuilder().deny().write().resourcesOfType(Patient.class).inCompartment("Patient", new IdType("Patient/5ffd7fc5935e485a20b0acee")).andThen().allowAll().build();
-
     }
 }

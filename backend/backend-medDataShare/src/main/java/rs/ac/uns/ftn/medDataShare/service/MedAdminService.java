@@ -32,6 +32,9 @@ public class MedAdminService {
     @Autowired
     private MedWorkerConverter medWorkerConverter;
 
+    @Autowired
+    private SymmetricCryptography symmetricCryptography;
+
     public MedAdminDoctors getAllMedInstitutionDoctors(){
         MedWorker medAdmin = (MedWorker) userDetailsService.getLoggedUser();
 
@@ -53,7 +56,8 @@ public class MedAdminService {
         try {
             String appUserIdentityId = savedMedWorker.getEmail();
             String org = savedMedWorker.getMedInstitution().getMembershipOrganizationId();
-            RegisterUserHyperledger.enrollOrgAppUser(appUserIdentityId, org, savedMedWorker.getId());
+            String userIdentityId = symmetricCryptography.putInfoInDb(savedMedWorker.getId());
+            RegisterUserHyperledger.enrollOrgAppUser(appUserIdentityId, org, userIdentityId);
         } catch (Exception e) {
             throw new AuthException("Error while signUp in hyperledger");
         }
