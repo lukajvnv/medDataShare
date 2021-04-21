@@ -39,7 +39,7 @@ public class CommonUserConverter implements ConverterInterface<CommonUser, Commo
             CommonUser commonUser = commonUserRepository.findByUsername(commonUserFormDto.getEmail());
             commonUser.setFirstName(commonUserFormDto.getFirstName());
             commonUser.setLastName(commonUserFormDto.getLastName());
-            commonUser.setGender(commonUserFormDto.getGender());
+//            commonUser.setGender(commonUserFormDto.getGender());
             commonUser.setAddress(commonUserFormDto.getAddress());
             commonUser.setBirthday(commonUserFormDto.getBirthday());
             return commonUser;

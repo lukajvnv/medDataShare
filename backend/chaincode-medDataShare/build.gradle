@@ -22,7 +22,6 @@ repositories {
     maven {
         url 'https://jitpack.io'
     }
-
 }
 
 application {
@@ -34,19 +33,12 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
     }
-
 }
 
 task deployPreparation(type: Copy) {
     from 'index'
     into "build/install/${project.name}"
 }
-
-//task printProperties {
-//    doLast {
-//        println project.name
-//    }
-//}
 
 deployPreparation.dependsOn installDist
 

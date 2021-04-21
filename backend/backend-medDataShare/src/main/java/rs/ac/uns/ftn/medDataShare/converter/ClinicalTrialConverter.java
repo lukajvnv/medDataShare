@@ -34,7 +34,8 @@ public class ClinicalTrialConverter implements ConverterInterface<ImagingStudy, 
                 .relevantParameters(relevantParameters)
                 .clinicalTrialType(clinicalTrialType)
                 .patient(object.getSubject().getReference())
-                .doctor(object.getLocation().getReference())
+                .doctor(object.getLocation().getDisplay())
+                .doctorId(object.getLocation().getReference())
                 .accessType(convertAccessType(object.getStatus()))
                 .resourcePath(resource)
                 .build();

@@ -1,13 +1,10 @@
 package rs.ac.uns.ftn.medDataShare.contract;
 
-import com.google.protobuf.ByteString;
 import org.hyperledger.fabric.contract.Context;
 import org.hyperledger.fabric.contract.ContractInterface;
 import org.hyperledger.fabric.contract.annotation.*;
 import org.hyperledger.fabric.shim.ChaincodeException;
 import org.hyperledger.fabric.shim.ChaincodeStub;
-import org.hyperledger.fabric.shim.ext.sbe.StateBasedEndorsement;
-import org.hyperledger.fabric.shim.ext.sbe.impl.StateBasedEndorsementFactory;
 import rs.ac.uns.ftn.medDataShare.component.ClinicalTrialContext;
 import rs.ac.uns.ftn.medDataShare.dao.ClinicalTrialAccessRequestDAO;
 import rs.ac.uns.ftn.medDataShare.dto.*;
@@ -19,7 +16,6 @@ import rs.ac.uns.ftn.medDataShare.enumeration.AccessUserRole;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
 
 @Contract(name = "rs.ac.uns.ftn.clinicalTrial",
         info = @Info(
@@ -74,6 +70,22 @@ public class ClinicalTrialContract implements ContractInterface {
             throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
         }
 
+    }
+
+    private void authorizeRequest(ClinicalTrialContext ctx, String userIdentityInDb, String methodName){
+        String userIdentityId = "";
+        try {
+            userIdentityId = ctx.getClientIdentity().getAttributeValue("userIdentityId");
+        } catch (Exception e) {
+            String errorMessage = "Error during method ctx.getClientIdentity.getAttributeValue(...)";
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
+        }
+        if(!userIdentityId.equals(userIdentityInDb)) {
+            String errorMessage = String.format("Error during method: %s , identified user does not have write rights", methodName);
+            System.out.println(errorMessage);
+            throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
+        }
     }
 
     @Override
@@ -154,22 +166,6 @@ public class ClinicalTrialContract implements ContractInterface {
         }
     }
 
-    private void authorizeRequest(ClinicalTrialContext ctx, String userIdentityInDb, String methodName){
-        String userIdentityId = "";
-        try {
-            userIdentityId = ctx.getClientIdentity().getAttributeValue("userIdentityId");
-        } catch (Exception e) {
-            String errorMessage = "Error during method ctx.getClientIdentity.getAttributeValue(...)";
-            System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
-        }
-        if(!userIdentityId.equals(userIdentityInDb)) {
-            String errorMessage = String.format("Error during method: %s , identified user does not have write rights", methodName);
-            System.out.println(errorMessage);
-            throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.UNAUTHORIZED_EDIT_ACCESS.toString());
-        }
-    }
-
     @Transaction(intent = Transaction.TYPE.EVALUATE)
     public ClinicalTrial getClinicalTrial(ClinicalTrialContext ctx, String key) {
         if (ctx.getClinicalTrialDAO().clinicalTrialExist(key)) {
@@ -179,11 +175,6 @@ public class ClinicalTrialContract implements ContractInterface {
             System.out.println(errorMessage);
             throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.CLINICAL_TRIAL_NOT_FOUND.toString());
         }
-    }
-
-    @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public boolean clinicalTrialExist(final ClinicalTrialContext ctx, final String key) {
-        return ctx.getClinicalTrialDAO().clinicalTrialExist(key);
     }
 
     @Transaction
@@ -279,11 +270,6 @@ public class ClinicalTrialContract implements ContractInterface {
         String errorMessage = String.format("ClinicalTrialAccessRequest %s does not exist", key);
         System.out.println(errorMessage);
         throw new ChaincodeException(errorMessage, ClinicalTrialContractErrors.CLINICAL_TRIAL_ACCESS_REQUEST_NOT_FOUND.toString());
-    }
-
-    @Transaction(intent = Transaction.TYPE.EVALUATE)
-    public boolean clinicalTrialAccessRequestExist(final ClinicalTrialContext ctx, final String key) {
-        return ctx.getClinicalTrialAccessRequestDAO().clinicalTrialAccessRequestExist(key);
     }
 
     @Transaction(intent = Transaction.TYPE.EVALUATE)

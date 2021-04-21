@@ -32,5 +32,7 @@ public class ClinicalTrialForm {
     private String patient;
 
     private String doctor;
+    private String doctorName;
+
 }
 

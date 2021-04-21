@@ -3,6 +3,7 @@ import FormComponent from "./FormComponent";
 import {dateToString} from "../util/DateUtil";
 import DoneIcon from '@material-ui/icons/Done';
 import CloseIcon from '@material-ui/icons/Close';
+import { locallizeTrialAccessRights, locallizeTrialType, locallizeUserGender, locallizeUserRole } from '../util/ClinicalTrialUtil';
 
 class Page extends FormComponent {
 
@@ -164,7 +165,6 @@ class Page extends FormComponent {
     }
 
     setPage(page) {
-
         this.state.searchData.page = page;
 
         this.props.history.push(this.page.path + this.buildParams());
@@ -184,6 +184,30 @@ class Page extends FormComponent {
         } else {
             return "...";
         }
+    }
+
+    renderTrialType(value) {
+        return locallizeTrialType(value);
+    }
+
+    renderTrialAccessRights(value) {
+        return locallizeTrialAccessRights(value);
+    }
+
+    renderId(value, characterNumbers = 10){
+        return value.substring(0, characterNumbers);
+    }
+
+    renderUser(value){
+        return this.renderId(value, 15);
+    }
+
+    renderGender(value){
+        return locallizeUserGender(value);
+    }
+
+    renderUserRole(value){
+        return locallizeUserRole(value);
     }
 }
 

@@ -36,11 +36,11 @@ public class MedWorkerConverter implements ConverterInterface<MedWorker, MedWork
                 .enabled(medWorker.isEnabled())
                 .activeSince(medWorker.getActiveSince())
                 .medInstitution( new MedInstitutionDto(
-                                        medInstitution.getId(),
-                                        medInstitution.getName(),
-                                        medInstitution.getAddress(),
-                                        medInstitution.getMembershipOrganizationId()
-                        ))
+                                medInstitution.getId(),
+                                medInstitution.getMembershipOrganizationId(),
+                                medInstitution.getName(),
+                                medInstitution.getAddress()
+                            ))
                 .build();
     }
 

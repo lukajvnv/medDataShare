@@ -24,6 +24,8 @@ public class ClinicalTrialDto {
 
     private String patient;
     private String doctor;
+    private String doctorId;
+    private String institution;
 
     private AccessType accessType;
 

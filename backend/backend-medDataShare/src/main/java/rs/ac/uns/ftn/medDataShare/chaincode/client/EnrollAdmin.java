@@ -16,16 +16,6 @@ import java.util.Properties;
 
 public class EnrollAdmin {
 
-	public static void main(String[] args) {
-		try {
-			enrollOrgCaAdmin(Config.ORG1);
-			enrollOrgCaAdmin(Config.ORG2);
-			enrollOrgCaAdmin(Config.ORG3);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	public static Identity enrollOrgCaAdmin(String org) throws Exception {
 		Map<String, String> orgConfigParams = ConnectionParamsUtil.setOrgConfigParams(org);
 		Properties props = new Properties();

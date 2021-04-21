@@ -30,25 +30,26 @@ class ClinicalTrialAccessRequest extends Page {
     clinicalTrialDescription = [
         { key: 'id', label: strings.clinicalTrial.detail.id },
         { key: 'time', transform: 'formatString', label: strings.clinicalTrial.detail.time },
-        { key: 'patient', label: strings.clinicalTrial.detail.patient },
+        // { key: 'patient', label: strings.clinicalTrial.detail.patient },
         { key: 'doctor', label: strings.clinicalTrial.detail.doctor },
-        { key: 'clinicalTrialType', label: strings.clinicalTrial.detail.clinicalTrialType },
+        { key: 'institution', label: strings.clinicalTrial.detail.institution },
+        { key: 'clinicalTrialType', transform: 'formatTrialType', label: strings.clinicalTrial.detail.clinicalTrialType },
         { key: 'introduction', label: strings.clinicalTrial.detail.introduction},
         { key: 'relevantParameters', label: strings.clinicalTrial.detail.relevantParameters },   
         { key: 'conclusion', label: strings.clinicalTrial.detail.conclusion },     
     ];
 
     trialAccessRequestDescription = [
-        { key: 'id' },
-        { key: 'time', transform: 'renderColumnDate' },
-        { key: 'sender' },
-        { key: 'receiver' },
-        { key: 'clinicalTrialType' },
-        { key: 'clinicalTrial' },
-        { key: 'from', transform: 'renderColumnDate' },
-        { key: 'until', transform: 'renderColumnDate' },   
-        { key: 'accessDecision' },     
-        { key: 'anonymity', transform: 'renderColumnDeleted' },     
+        { key: 'id', transform: 'renderId', label: strings.tasklist.trialAccessRequest.view.id },
+        { key: 'time', label: strings.tasklist.trialAccessRequest.view.time, transform: 'renderColumnDate' },
+        { key: 'sender', transform: 'renderUser', label: strings.tasklist.trialAccessRequest.view.sender },
+        // { key: 'receiver', label: strings.tasklist.trialAccessRequest.view.receiver },
+        { key: 'clinicalTrialType', transform: 'renderTrialType', label: strings.tasklist.trialAccessRequest.view.clinicalTrialType },
+        // { key: 'clinicalTrial', label: strings.tasklist.trialAccessRequest.view.clinicalTrial },
+        { key: 'from', label: strings.tasklist.trialAccessRequest.view.from, transform: 'renderColumnDate' },
+        { key: 'until', label: strings.tasklist.trialAccessRequest.view.until, transform: 'renderColumnDate' },   
+        { key: 'accessDecision', transform: 'renderTrialAccessRights', label: strings.tasklist.trialAccessRequest.view.accessDecision },     
+        { key: 'anonymity', label: strings.tasklist.trialAccessRequest.view.anonymity, transform: 'renderColumnDeleted' },     
     ];
 
     validationList = {
@@ -191,6 +192,8 @@ class ClinicalTrialAccessRequest extends Page {
 
     renderTrialAccessRequestAttribute(trialAccessRequestAttributesMeta, trialAccessRequest){
         const key = trialAccessRequestAttributesMeta.key;
+        const label = trialAccessRequestAttributesMeta.label;
+
         let value = trialAccessRequest[key];
     
         const transformation = trialAccessRequestAttributesMeta.transform;
@@ -202,7 +205,7 @@ class ClinicalTrialAccessRequest extends Page {
                     <Grid item xs={6} md={6}>
                         <Paper className='paper'>
                             <Typography variant="body1" color="textSecondary" component="h5">
-                                {key}
+                                {label}
                             </Typography>
                         </Paper>
                     </Grid>
@@ -230,7 +233,7 @@ class ClinicalTrialAccessRequest extends Page {
                                 {strings.tasklist.trialAccessRequest.dateCreated} {this.renderColumnDate(clinicalTrialRequest.time)}
                             </Typography>
                             <Typography variant="body1" color="textSecondary" component="h5">
-                                {strings.tasklist.trialAccessRequest.clinicalTrialType} {clinicalTrialRequest.clinicalTrialType}
+                                {strings.tasklist.trialAccessRequest.clinicalTrialType} {this.renderTrialType(clinicalTrialRequest.clinicalTrialType)}
                             </Typography>
                         </CardContent>
                     </CardActionArea>

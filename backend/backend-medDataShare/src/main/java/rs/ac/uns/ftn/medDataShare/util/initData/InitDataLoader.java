@@ -150,8 +150,8 @@ public class InitDataLoader implements CommandLineRunner {
 
         MedWorker medWorker1 = MedWorker
                 .builder()
-                .firstName("Luka Doctor")
-                .lastName("Jovanovic")
+                .firstName("Doktor Mirko")
+                .lastName("Ivanovic")
                 .username("userd1@gmail.com")
                 .email("userd1@gmail.com")
                 .password(userPasswordEncoder.encode("userd1"))
@@ -165,8 +165,8 @@ public class InitDataLoader implements CommandLineRunner {
 
         MedWorker medWorker2 = MedWorker
                 .builder()
-                .firstName("Peter Doctor")
-                .lastName("Jovanovic")
+                .firstName("Doktor Petar")
+                .lastName("Mikulic")
                 .username("userd2@gmail.com")
                 .email("userd2@gmail.com")
                 .password(userPasswordEncoder.encode("userd2"))
@@ -180,7 +180,7 @@ public class InitDataLoader implements CommandLineRunner {
 
         MedWorker medWorkerAdmin = MedWorker
                 .builder()
-                .firstName("Luka Admin")
+                .firstName("Marko Admin")
                 .lastName("Jovanovic")
                 .username("usera1@gmail.com")
                 .email("usera1@gmail.com")
@@ -197,8 +197,8 @@ public class InitDataLoader implements CommandLineRunner {
 
         Admin admin = Admin
                 .builder()
-                .firstName("Luka SuperAdmin")
-                .lastName("Jovanovic")
+                .firstName("Bojan SuperAdmin")
+                .lastName("Ivanovic")
                 .username("usersa1@gmail.com")
                 .email("usersa1@gmail.com")
                 .password(userPasswordEncoder.encode("usersa1"))
@@ -232,7 +232,7 @@ public class InitDataLoader implements CommandLineRunner {
 
             String patient = symmetricCryptography.putInfoInDb(patientUser.getId());
             String doctor = symmetricCryptography.putInfoInDb(doctorUser.getId());
-
+            String doctorName = doctorUser.getFirstName() + " " + doctorUser.getLastName();
             String contentType = dataValue.getContentType();
             byte[] fileContent = ImageUtil.getBytes(dataValue.getContentName());
 
@@ -244,6 +244,7 @@ public class InitDataLoader implements CommandLineRunner {
                     .conclusion(dataValue.getConclusion())
                     .patient(patient)
                     .doctor(doctor)
+                    .doctorName(doctorName)
                     .build();
 
             AccessType clinicalTrialAccessType = AccessType.valueOf(dataValue.getClinicalTrialAccessType());

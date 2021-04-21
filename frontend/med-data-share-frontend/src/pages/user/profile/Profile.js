@@ -27,7 +27,20 @@ import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import EditIcon from '@material-ui/icons/Edit';
 
 class Profile extends Page {
-
+    localizedAttributeLabels = {
+        email: {label: strings.profile.detail.email},
+        firstName: {label: strings.profile.detail.firstName},
+        lastName: {label: strings.profile.detail.lastName},
+        address: {label: strings.profile.detail.address},
+        enabled: {label: strings.profile.detail.enabled},
+        gender: {label: strings.profile.detail.gender, transform: 'renderGender'},
+        birthday: {label: strings.profile.detail.birthday},
+        activeSince: {label: strings.profile.detail.activeSince},
+        role: {label: strings.profile.detail.role, transform: 'renderUserRole'},
+        occupation: {label: strings.profile.detail.occupation},
+        medInstitution: {label: strings.profile.detail.institution},
+        id: {label: strings.profile.detail.id}
+    };
     constructor(props) {
         super(props);
 
@@ -84,30 +97,34 @@ class Profile extends Page {
     renderOneProfileAttribute(attributeKeyValuePair) {
         let [attributeName, attributeValue] = attributeKeyValuePair;
         attributeValue = isBoolean(attributeValue) ? this.renderColumnDeleted(attributeValue): attributeValue;
+        if(attributeName === 'id') return '';
+        
+        let value = attributeValue;
+        const transformationFunction = this.localizedAttributeLabels[attributeName].transform;
+        if(transformationFunction){
+            value = this[transformationFunction](value);
+        }
+
         return <Grid key={attributeName} container spacing={2} >
-                <Grid item xs={3} md={2}>
-                    
-                </Grid>
-                <Grid item xs={3} md={4}>
-                    <Paper className='paper'>
-                        <Typography variant="body1" color="textSecondary" component="h5">
-                            {attributeName}
-                        </Typography>
-                    </Paper>
-                </Grid>
-                
-                <Grid item xs={3} md={4}>
-                    <Paper className='paper'>
-                        <Typography variant="body1" color="textPrimary" component="h5">
-                            {attributeValue}
-                        </Typography>
-                    </Paper>
-                </Grid>
-                
-                <Grid item xs={3} md={2}>
-                
-                </Grid>  
+            <Grid item xs={3} md={2}>    
+            </Grid>
+            <Grid item xs={3} md={4}>
+                <Paper className='paper'>
+                    <Typography variant="body1" color="textSecondary" component="h5">
+                        {this.localizedAttributeLabels[attributeName].label}
+                    </Typography>
+                </Paper>
+            </Grid>
+            <Grid item xs={3} md={4}>
+                <Paper className='paper'>
+                    <Typography variant="body1" color="textPrimary" component="h5">
+                        {value}
+                    </Typography>
+                </Paper>
+            </Grid>
+            <Grid item xs={3} md={2}>
             </Grid>  
+        </Grid>  
     }
 
     render() {
@@ -116,9 +133,8 @@ class Profile extends Page {
         if(!this.state.displayUser){
             return '';
         }
-
         return (
-            <div >
+            <div>
                 <Card className="mediaContainer">
                     <CardActionArea>
                         <CardMedia
@@ -184,6 +200,7 @@ class Profile extends Page {
                             medInstitutionName={this.state.medInstitutionName} 
                             data={this.state.displayUser}
                             dataMeta={this.state.user}
+                            localizedAttributeLabels={this.localizedAttributeLabels}
                         />
                     }
                     {

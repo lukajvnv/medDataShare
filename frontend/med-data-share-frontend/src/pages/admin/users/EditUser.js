@@ -28,7 +28,7 @@ class EditUser extends FormComponent {
     };
 
     nonEditableFieldList = [
-        'id', 'email', 'activeSince', 'enabled', 'role', 'medInstitution'
+        'id', 'email', 'activeSince', 'enabled', 'role', 'medInstitution', 'gender'
     ]
 
     constructor(props) {
@@ -46,7 +46,6 @@ class EditUser extends FormComponent {
     }
 
     submit() {
-
         if(!this.validate()) {
             return;
         }
@@ -70,7 +69,6 @@ class EditUser extends FormComponent {
     }
 
     render() {
-
         return (
             <Grid id='page' item md={ 12 }>
 
@@ -86,7 +84,9 @@ class EditUser extends FormComponent {
                         data={ this.state.data } 
                         dataMeta={ this.state.dataMeta } 
                         nonEditableFieldList = {this.nonEditableFieldList}
-                        errors={ this.state.errors }  />
+                        errors={ this.state.errors }
+                        localizedAttributeLabels={this.props.localizedAttributeLabels}
+                    />
                 </Paper>
 
             </Grid>

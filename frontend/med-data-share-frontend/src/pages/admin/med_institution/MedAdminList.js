@@ -24,7 +24,7 @@ class MedAdminList extends TablePage {
         { key: 'email', label: strings.medAdminList.email },
         { key: 'firstName', label: strings.medAdminList.firstName },
         { key: 'lastName', label: strings.medAdminList.lastName },
-        { key: 'role', label: strings.medAdminList.role },
+        { key: 'role', label: strings.medAdminList.role, transform: 'renderUserRole' },
         { key: 'activeSince', label: strings.medAdminList.dateCreated, transform: 'renderColumnDate' },
         { key: 'enabled', label: strings.medAdminList.enabled, transform: 'renderColumnDeleted' }
     ];

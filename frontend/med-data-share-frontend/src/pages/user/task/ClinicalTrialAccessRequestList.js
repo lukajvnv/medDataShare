@@ -67,8 +67,8 @@ class ClinicalTrialAccessList extends Page {
 
     renderAccessRequest(accessRequest){
         const id = accessRequest.id;
-        const title = "ClinicalTrialRequest: " + id;
-        const message = `Date: ${this.renderColumnDate(accessRequest.time)}, ClinicalTrialType: ${accessRequest.clinicalTrialType}`
+        const title = `${strings.tasklist.trialAccessRequest.term}: ${this.renderId(id)}`;
+        const message = `${strings.tasklist.trialAccessRequest.date}: ${this.renderColumnDate(accessRequest.time)}, ${strings.clinicalTrial.preview.clinicalTrialType}: ${this.renderTrialType(accessRequest.clinicalTrialType)}`
         return <Card 
                     key={id}
                     className="accessRequestItem"

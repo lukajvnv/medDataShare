@@ -13,8 +13,8 @@ import {
 import AccessType from '../../../constants/AccessType';
 
 const accessTypeDatasource = [
-    {key: AccessType.FORBIDDEN, label: 'Disallow access to the trial'},
-    {key: AccessType.UNCONDITIONAL, label: 'Allow access to the trial'},
+    {key: AccessType.FORBIDDEN, label: strings.tasklist.trialAccessRequest.form.forbidden},
+    {key: AccessType.UNCONDITIONAL, label: strings.tasklist.trialAccessRequest.form.unconditional},
 ];
 
 const Transition = React.forwardRef(function Transition(props, ref) {

@@ -26,6 +26,4 @@ public class ClinicalTrialPreviewDto {
 
     //relevant parameters
     //doctorId
-    //patientId
-
 }

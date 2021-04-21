@@ -11,15 +11,15 @@ import SearchIcon from '@material-ui/icons/Search';
 import ClinicalTrialType from '../../../constants/ClinicalTrialType';
 
 const clinicalTrialTypeDatasource = [
-    {key: ClinicalTrialType.CBC, label: 'Complete blood count'},
-    {key: ClinicalTrialType.CT, label: 'CT'},
-    {key: ClinicalTrialType.RTG, label: 'RTG'},
-    {key: ClinicalTrialType.US, label: 'Ultrasound'},
+    {key: ClinicalTrialType.CT, label: strings.clinicalTrial.form.ct},
+    {key: ClinicalTrialType.RTG, label: strings.clinicalTrial.form.rtg},
+    {key: ClinicalTrialType.US, label: strings.clinicalTrial.form.us},
+    {key: ClinicalTrialType.CBC, label: strings.clinicalTrial.form.cbc}
 ];
 
 const orderByDatasource = [
-    {key: 'desc', label: 'Order by latest'},
-    {key: 'asc', label: 'Order by oldest'},
+    {key: 'desc', label: strings.clinicalTrial.preview.form.latest},
+    {key: 'asc', label: strings.clinicalTrial.preview.form.oldest},
 ];
 
 

@@ -11,7 +11,8 @@ import Validators from "../../constants/ValidatorTypes";
 import * as Actions from "../../actions/Actions";
 import FileFormat from "../../constants/FileFormat";
 
-import {Paper, Grid} from "@material-ui/core";
+import {Paper, Grid, FormHelperText, FormControl, Box} from "@material-ui/core";
+import {getError, hasError} from "../../functions/Validation";
 
 import { addClinicalTrial } from '../../services/DoctorService';
 import AddClinicalTrialForm from '../../components/forms/doctor/AddClinicalTrialForm';
@@ -74,18 +75,19 @@ class AddClinicalTrial extends Page {
 
         let fileList = event.target.files;
         let file = fileList.item(0);
+
+        if(file){
+            let formData = new FormData(); 
+            formData.append('file', file, file.name); 
+            const fileType = file.type;
     
-        let formData = new FormData(); 
-        formData.append('file', file, file.name); 
-        const fileType = file.type;
-
-        
-        if(fileType !== FileFormat.jpg && fileType !== FileFormat.png){
-            this.props.enqueueSnackbar(strings.clinicalTrial.form.fileUploadError, {variant: 'error'});
-            file = undefined;
-            event.target.value = null;
-        } 
-
+            if(fileType !== FileFormat.jpg && fileType !== FileFormat.png){
+                this.props.enqueueSnackbar(strings.clinicalTrial.form.fileUploadError, {variant: 'error'});
+                file = undefined;
+                event.target.value = null;
+            } 
+        }
+    
         const data = this.state.data;
         data['file'] = file;
         this.setState({data});
@@ -130,19 +132,25 @@ class AddClinicalTrial extends Page {
     }
 
     render() {
-
         return (
             <div id='clinicalTrial'>
                 <Grid item md={ 6 }>
                     <div className='header'>
                         <h1>{ strings.clinicalTrial.form.pageTitle }</h1>
                     </div>
-
                     <Paper className='paper'>
-                        <FindPatientAutocomplete 
-                            setPatient={this.setPatient}
-                            users={this.state.patients}
-                        />
+                        <FormControl
+                            fullWidth
+                            error={hasError(this.state.errors, 'patient')}
+                        >   
+                            <Box p={1} border={1} borderColor={hasError(this.state.errors, 'patient') ? 'red': 'white'} borderRadius={16}>
+                                <FindPatientAutocomplete 
+                                    setPatient={this.setPatient}
+                                    users={this.state.patients}
+                                />
+                                <FormHelperText >{getError(this.state.errors, 'patient')}</FormHelperText>
+                            </Box>
+                        </FormControl>
                         <AddClinicalTrialForm 
                             onChange={ this.changeData } 
                             onSubmit={ this.submit }
@@ -151,15 +159,12 @@ class AddClinicalTrial extends Page {
                             data={ this.state.data } 
                             errors={ this.state.errors }  
                         />
-                        
                     </Paper>
                     {
                         this.state.displayProgress && <LinearProgress color="secondary" />
                     }
                 </Grid>
-                
             </div>
-            
         );
     }
 }

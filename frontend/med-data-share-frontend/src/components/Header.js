@@ -13,13 +13,10 @@ import MenuIcon from '@material-ui/icons/Menu';
 import PersonIcon from '@material-ui/icons/Person';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import AddIcon from '@material-ui/icons/Add';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import HomeIcon from '@material-ui/icons/Home';
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 
 import { 
-    ListItemIcon, ListItemText, 
-    Menu, MenuItem,
     IconButton, Tooltip
 } from "@material-ui/core";
 
@@ -108,7 +105,9 @@ class Header extends Component {
                             </IconButton>
                         </Tooltip>
                     </Link>
-
+                    <IconButton color="primary" onClick={() => this.logout()}>
+                        <ExitToAppIcon />{strings.header.logout}
+                    </IconButton>
                     {/* <Link to={"/"} >
                         <Tooltip title={strings.menu.Notifications} aria-label="add" arrow>
                             <Badge badgeContent={4} color="primary" variant="dot">
@@ -118,8 +117,7 @@ class Header extends Component {
                             </Badge>
                         </Tooltip>
                     </Link> */}
-
-                    <IconButton
+                    {/* <IconButton
                         size="small"
                         color="primary"
                         aria-owns={this.state.anchorEl ? 'person-menu' : undefined}
@@ -140,8 +138,7 @@ class Header extends Component {
                             </ListItemIcon>
                             <ListItemText inset primary={strings.header.logout} />
                         </MenuItem>
-                    </Menu>
-                    
+                    </Menu> */} 
                 </div>
             </div>
 

@@ -199,13 +199,14 @@ let strings = new LocalizedStrings({
         },
 
         clinicalTrial: {
+            term: 'Clinical trial',
             detail: {
                 text: 'Detail',
                 pageTitle: 'Clinical trial',
                 intro: 'Clinical trial',
                 close: 'Close',
                 ok: 'Ok',
-                introduction: 'Introdution',
+                introduction: 'Introduction',
                 relevantParameters: 'Relevant parameters',
                 conclusion: 'Conclusion',
                 patient: 'Patient',
@@ -214,7 +215,9 @@ let strings = new LocalizedStrings({
                 id: 'Clinical Trial ID',
                 clinicalTrialType: 'Trial type',
                 accessType: 'Access type',
+                accessTypePlaceholder: 'Define access type',
                 image: 'Image',
+                imagePlaceholder: 'Click arrow on right to view image',
                 pdf: 'Pdf file',
                 institution: 'Institution',
                 clinicalTrial: 'Clinical trial',
@@ -234,13 +237,22 @@ let strings = new LocalizedStrings({
                 time: 'Date',
                 id: 'Clinical Trial ID',
                 clinicalTrialType: 'Clinical Trial type',
+                cbc: 'Complete blood count',
+                ct: 'CT',
+                rtg: 'RTG',
+                us: 'Ultrasound',
                 image: 'Image',
                 pdf: 'Pdf file',
                 error: 'Error while adding clinical trial',
                 success: 'Clinical trial added',
-                file: 'Upload file',
-                filePlaceholder: 'Click button Choose file to upload file',
-                fileUploadError: 'Invalid format! JPG AND PNG are supported formats!'
+                file: 'Upload image or chart',
+                filePlaceholder: 'Click button Upload image or chart to upload medical image',
+                fileUploadError: 'Invalid format! JPG AND PNG are supported formats!',
+                accessType: {
+                    FORBIDDEN: 'For private use only',
+                    UNCONDITIONAL: 'Unlimited access',
+                    ASK_FOR_ACCESS: 'Ask for access'
+                }
             },
             patientDialog: {
                 pageTitle: 'Find a patient',
@@ -259,14 +271,21 @@ let strings = new LocalizedStrings({
                     until: 'Until',
                     institutions: 'Institutions',
                     orderBy: 'Order by',
+                    latest: 'Order by latest',
+                    oldest: 'Order by oldest',
                     cancel: 'Cancel',
                     refresh: 'Refresh'
                 },
                 sendRequestSuccess: 'Your trial access request is successfully sent. To follow status of your access open TASKS under REQUESTED tab',
                 sendRequestError: 'Error while sending trial access request'
+            },
+            accessType: {
+                IDLE: 'IDLE',
+                FORBIDDEN: 'FORBIDDEN',
+                UNCONDITIONAL: 'UNCONDITIONAL',
+                ASK_FOR_ACCESS: 'ASK_FOR_ACCESSs'
             }
         },
-
         tasklist: {
             tabs: {
                 trialDefineAccess: 'Trial define access',
@@ -282,6 +301,8 @@ let strings = new LocalizedStrings({
                 defineAccessError: 'Error while defining access for the trial'
             },
             trialAccessRequest: {
+                term: 'Trial access request',
+                date: 'Request date',
                 pageTitle: 'Access requests to your clinical trial',
                 detail: 'Detail',
                 back: 'Back',
@@ -299,9 +320,23 @@ let strings = new LocalizedStrings({
                     from: 'From',
                     until: 'Until',
                     decisionSuccess: 'Your decision is successfully recorded',
-                    decisionError: 'Error while recording decision'
+                    decisionError: 'Error while recording decision',
+                    forbidden: 'Disallow access to the trial',
+                    unconditional: 'Allow access to the trial'
                 },
-                sendRequest: 'Send request'
+                sendRequest: 'Send request',
+                view: {
+                    id: 'Id',
+                    time: 'Request time',
+                    sender: 'Sender (Id)',
+                    receiver: 'Pacient',
+                    clinicalTrialType: 'Clinical trial type',
+                    clinicalTrial: 'Clinical trial',
+                    from: 'Available from',
+                    until: 'Available until',   
+                    accessDecision: 'Decision',     
+                    anonymity: 'Anonymity of personal data', 
+                }
             },
             trialAccessHistory: {
                 pageTitle: 'Access request\'s history for your clinical trials',
@@ -333,27 +368,49 @@ let strings = new LocalizedStrings({
                 submit: 'Edit',
                 imageError: 'Wrong image format(.jpg or .png are allowed)'
             },
+            detail: {
+                email: 'Email',
+                firstName: 'First name',
+                lastName: 'Last name',
+                address: 'Address',
+                enabled: 'Account enabled',
+                gender: 'Gender',
+                birthday: 'Birthday',
+                activeSince: 'Active since',
+                role: 'Role',
+                occupation: 'Occupation',
+                institution: 'Medical institution',
+                id: 'Id',
+                genders: {
+                    Female: 'Female',
+                    Male: 'Male',
+                    Other: 'Other'
+                },
+                roles: {
+                    ROLE_COMMON_USER: 'ROLE_COMMON_USER',
+                    ROLE_DOCTOR: 'DOCTOR',
+                    ROLE_MED_ADMIN: 'ROLE_MED_ADMIN',
+                    ROLE_SUPER_ADMIN: 'ROLE_SUPER_ADMIN'
+                }
+            }
         }, 
-
         pdf: {
             page: 'Page',
             next: 'Next',
             previous: 'Previous'
         }
-        
     }, 
 
     rs: {
         appName: 'MedDataShare aplikacija',
-
         menu: {
             Home: 'Početna',
             Notifications: 'Obaveštenja',
             Tasks: 'Zadaci',
             Trials: 'Moji pregledi',
-            TrialsPreview: 'Osnovni prikaz pregleda',
+            TrialsPreview: 'Pretraga pregleda drugih lica',
             Profile: 'Profil',
-            AdminPortal: 'AdminPortal',
+            AdminPortal: 'Portal administratora',
             AddMedicalExamination: 'Dodaj pregled'
         },
 
@@ -425,9 +482,9 @@ let strings = new LocalizedStrings({
             signUp: 'Registracija',
             wrongCredentials: 'Pogrešni kredencijali',
             gender: {
-                female: 'Female',
-                male: 'Male',
-                other: 'Other'
+                female: 'Ženski',
+                male: 'Muški',
+                other: 'Neutralno'
             },
             address: 'Adresa'
         },
@@ -542,22 +599,25 @@ let strings = new LocalizedStrings({
         },
 
         clinicalTrial: {
+            term: 'Medicinski pregled',
             detail: {
                 text: 'Detalji',
                 pageTitle: 'Medicinski pregled',
                 intro: 'Medicinski pregled',
                 close: 'Zatvori',
                 ok: 'Ok',
-                introduction: 'Uvod',
-                relevantParameters: 'Referentni parametri',
+                introduction: 'Mišljenje',
+                relevantParameters: 'Parametri',
                 conclusion: 'Zaključak',
                 patient: 'Pacijent',
                 doctor: 'Doktor',
-                time: 'Datum',
+                time: 'Datum pregleda',
                 id: 'ID pregleda',
                 clinicalTrialType: 'Vrsta pregleda',
                 accessType: 'Način pristupa',
+                accessTypePlaceholder: 'Definišite način pristupa',
                 image: 'Slika',
+                imagePlaceholder: 'Kliknite strelicu desno za prikaz slike',
                 pdf: 'Pdf fajla',
                 institution: 'Medicinska ustanova',
                 clinicalTrial: 'Medicinski pregled',
@@ -568,26 +628,35 @@ let strings = new LocalizedStrings({
                 intro: 'Pregled',
                 close: 'Zatvori',
                 submit: 'Pošalji',
-                introduction: 'Uvod',
-                relevantParameters: 'Referentni parametri',
+                introduction: 'Mišljenje',
+                relevantParameters: 'Parametri',
                 conclusion: 'Zaključak',
-                patient: 'Pacijenti',
+                patient: 'Pacijent',
                 patientPlaceholder: 'Pretražite pacijenta', 
                 doctor: 'Doktor',
                 time: 'Datum',
                 id: 'ID medicinskog pregleda',
-                clinicalTrialType: 'Vrsta medicinskog pregleda',
+                clinicalTrialType: 'Tip pregleda',
+                cbc: 'Krvna slika',
+                ct: 'CT',
+                rtg: 'Rendgen',
+                us: 'Ultrazvuk',
                 image: 'Slika',
                 pdf: 'Pdf fajl',
                 error: 'Greška prilikom dodavanja pregleda',
                 success: 'Pregled je dodat',
-                file: 'Učitan fajl',
-                filePlaceholder: 'Klikni Choose file kako bih učitao fajl',
-                fileUploadError: 'Nevalidan format! Podržani formati su JPG i PNG!'
+                file: 'Učitaj sliku',
+                filePlaceholder: 'Klikni Učitaj sliku kako biste učitali medicinsku sliku ili grafik pregleda.',
+                fileUploadError: 'Nevalidan format! Podržani formati su JPG i PNG!',
+                accessType: {
+                    FORBIDDEN: 'Samo za ličnu upotrebu',
+                    UNCONDITIONAL: 'Bezuslovan pristup',
+                    ASK_FOR_ACCESS: 'Prethodno zatražiti dozvolu'
+                }
             },
             patientDialog: {
                 pageTitle: 'Pronađite pacijenta',
-                desc: 'Unesite ime kako bi pronašli pacijenta',
+                desc: 'Unesite ime kako bi pronašli pacijenta *',
                 cancel: 'Otkaži',
                 submit: 'Dodaj'
             },
@@ -602,11 +671,21 @@ let strings = new LocalizedStrings({
                     until: 'Do',
                     institutions: 'Medicinska ustanova',
                     orderBy: 'Sortiraj po',
+                    latest: 'Sortiraj prvo novije preglede',
+                    oldest: 'Sortiraj prvo starije preglede',
                     cancel: 'Poništi',
                     refresh: 'Osveži'
                 },
-                sendRequestSuccess: 'Uspešno poslat zahtev za pristup pregledu. Kako biste pratili status Vašeg zahteva otvoriti Zadaci, tab: Zahtevani pristup',
-                sendRequestError: 'Greška prilikom zahteva za pristup pregledu'
+                sendRequestSuccess: 'Uspešno poslat zahtev za pristup pregledu. Kako biste pratili status Vašeg zahteva otvoriti Zadaci, tab: Poslati zahtevi za pristup',
+                sendRequestError: 'Greška prilikom zahteva za pristup pregledu',
+                date: 'Datum pregleda',
+                clinicalTrialType: 'Vrsta pregleda'
+            },
+            accessType: {
+                IDLE: 'Čeka se definisanje pristupa',
+                FORBIDDEN: 'Zabranjen pristup',
+                UNCONDITIONAL: 'Bezuslovan pristup',
+                ASK_FOR_ACCESS: 'Prethodno zatražiti dozvolu'
             }
         },
 
@@ -625,6 +704,8 @@ let strings = new LocalizedStrings({
                 defineAccessError: 'Greška prilikom definisanja prava pristupa Vašeg pregleda'
             },
             trialAccessRequest: {
+                term: 'Zahtev za pristup pregledu',
+                date: 'Datum zahteva',
                 pageTitle: 'Zahtevi za pristup Vašim pregledima',
                 detail: 'Detalji',
                 back: 'Nazad',
@@ -637,14 +718,28 @@ let strings = new LocalizedStrings({
                 pageTitleSingular: 'Zahtev za pristup pregledu',
                 form: {
                     pageTitle: 'Odluka povodom zahteva',
-                    decision: 'Odluka',
+                    decision: 'Donesi odluku',
                     anonymity: 'Obezbedi anonimnost ličnih osetljivih podataka',
                     from: 'Od',
                     until: 'Do',
                     decisionSuccess: 'Vaša odluka je uspešno sačuvana',
-                    decisionError: 'Greška prilikom čuvanja vaše odluke'
+                    decisionError: 'Greška prilikom čuvanja vaše odluke',
+                    forbidden: 'Onemogući pristup pregledu',
+                    unconditional: 'Dozvoli pristup pregledu'
                 },
-                sendRequest: 'Pošalji zahtev'
+                sendRequest: 'Pošalji zahtev',
+                view: {
+                    id: 'Id zahteva',
+                    time: 'Vreme zahteva',
+                    sender: 'Pošiljalac (Id)',
+                    receiver: 'Pacijent',
+                    clinicalTrialType: 'Vrsta pregleda',
+                    clinicalTrial:'Pregled',
+                    from: 'Dostupno od',
+                    until: 'Dostupno do',   
+                    accessDecision:'Odluka',     
+                    anonymity: 'Anonimnost ličnih podataka', 
+                }
             },
             trialAccessHistory: {
                 pageTitle: 'Istorija zahteva za pristup medicinskim pregledima',
@@ -676,6 +771,31 @@ let strings = new LocalizedStrings({
                 submit: 'Uredi',
                 imageError: 'Pogrešan format(.jpg or .png su dozvoljeni)'
             },
+            detail: {
+                email: 'Email',
+                firstName: 'Ime',
+                lastName: 'Prezime',
+                address: 'Adresa stanovanja',
+                enabled: 'Nalog aktiviran',
+                gender: 'Pol',
+                birthday: 'Datum rođenja',
+                activeSince: 'Korisnik aktivan od',
+                role: 'Uloga',
+                occupation: 'Specijalnost',
+                institution: 'Medicinska ustanova',
+                id: 'Id',
+                genders: {
+                    Female: 'Ženski',
+                    Male: 'Muški',
+                    Other: 'Neutralno'
+                },
+                roles: {
+                    ROLE_COMMON_USER: 'Registrovani korisnik',
+                    ROLE_DOCTOR: 'Medicinsko osoblje',
+                    ROLE_MED_ADMIN: 'Administrator medicinske ustanove',
+                    ROLE_SUPER_ADMIN: 'Administrator sistema'
+                }
+            }
         },
 
         pdf: {

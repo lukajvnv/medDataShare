@@ -27,6 +27,7 @@ import rs.ac.uns.ftn.medDataShare.enums.ClinicalTrialType;
 import rs.ac.uns.ftn.medDataShare.model.medInstitution.MedInstitution;
 import rs.ac.uns.ftn.medDataShare.model.user.MedWorker;
 import rs.ac.uns.ftn.medDataShare.model.user.User;
+import rs.ac.uns.ftn.medDataShare.repository.MedInstitutionRepository;
 import rs.ac.uns.ftn.medDataShare.util.Constants;
 import rs.ac.uns.ftn.medDataShare.util.StringUtil;
 
@@ -44,6 +45,9 @@ public class HyperledgerService {
 
     @Autowired
     private SymmetricCryptography symmetricCryptography;
+
+    @Autowired
+    private MedInstitutionRepository medInstitutionRepository;
 
     private final static Logger LOG = Logger.getLogger(HyperledgerService.class.getName());
 
@@ -181,13 +185,15 @@ public class HyperledgerService {
             ClinicalTrialsPreviewResponse clinicalTrialsPreviewResponse = ClinicalTrialsPreviewResponse.deserialize(result);
             LOG.info("result: " + clinicalTrialsPreviewResponse);
             for (ChaincodeClinicalTrialDto chaincodeClinicalTrialDto : clinicalTrialsPreviewResponse.getClinicalTrialDtoList()){
+                String medInstitutionId = chaincodeClinicalTrialDto.getMedInstitutionId();
+                String medInstitutionName = medInstitutionRepository.getOne(medInstitutionId).getName();
                 ClinicalTrialPreviewDto clinicalTrialPreviewDto = ClinicalTrialPreviewDto
                         .builder()
                         .time(StringUtil.createDate(chaincodeClinicalTrialDto.getTime()))
                         .clinicalTrialType(ClinicalTrialType.valueOf(chaincodeClinicalTrialDto.getClinicalTrialType()))
                         .clinicalTrial(chaincodeClinicalTrialDto.getKey())
                         .accessType(AccessType.valueOf(chaincodeClinicalTrialDto.getAccessType()))
-                        .institution(chaincodeClinicalTrialDto.getMedInstitutionId())
+                        .institution(medInstitutionName)
                         .patientId(chaincodeClinicalTrialDto.getPatientId())
                         .build();
                 clinicalTrialPreviewDtos.add(clinicalTrialPreviewDto);
@@ -198,8 +204,6 @@ public class HyperledgerService {
         }
         return clinicalTrialPreviewDtos;
     }
-
-
 
     public ClinicalTrialAccessRequest sendAccessRequest(User user, ClinicalTrialAccessSendRequestForm clinicalTrialAccessSendRequestForm) throws Exception {
         ClinicalTrialAccessRequest clinicalTrialAccessRequest = null;
@@ -389,7 +393,7 @@ public class HyperledgerService {
         return new String(Hex.encode(hash));
     }
 
-    public boolean validData(String originalString, String savedHashValue){
+    public boolean areDataValid(String originalString, String savedHashValue){
         String originalStringHash = hashValue(originalString);
         return originalStringHash.equals(savedHashValue);
     }

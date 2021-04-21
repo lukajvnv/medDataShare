@@ -53,7 +53,9 @@ public class DoctorService implements UserInterface<MedWorker, MedWorkerDto, Med
     public ClinicalTrialDto addClinicalTrial(ClinicalTrialForm clinicalTrialForm) throws Exception {
         User user = userDetailsService.getLoggedUser();
         String doctor = user.getId();
+        String doctorName = user.getFirstName() + " " + user.getLastName();
         clinicalTrialForm.setDoctor(symmetricCryptography.putInfoInDb(doctor));
+        clinicalTrialForm.setDoctorName(doctorName);
         clinicalTrialForm.setPatient(symmetricCryptography.putInfoInDb(clinicalTrialForm.getPatient()));
 
         String contentType = clinicalTrialForm.getFile().getContentType();

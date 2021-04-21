@@ -19,12 +19,6 @@ import java.util.Properties;
 
 public class RegisterUserHyperledger {
 
-	public static void main(String[] args) throws Exception {
-		enrollOrgAppUser("user1.org1@gmail.com", Config.ORG1, "user1.org1@gmail.com");
-		enrollOrgAppUser("user2.org1@gmail.com", Config.ORG2, "user2.org1@gmail.com");
-		enrollOrgAppUser("user3.org1@gmail.com", Config.ORG3, "user3.org1@gmail.com");
-	}
-
 	public static Identity enrollOrgAppUser(String appUserWalletIdentityId, String org, String userIdentityId) throws Exception {
 		WalletUtil walletUtil = new WalletUtil();
 

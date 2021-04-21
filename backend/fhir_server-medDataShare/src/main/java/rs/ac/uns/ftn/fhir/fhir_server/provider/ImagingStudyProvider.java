@@ -1,10 +1,8 @@
 package rs.ac.uns.ftn.fhir.fhir_server.provider;
 
 import ca.uhn.fhir.rest.annotation.*;
-import ca.uhn.fhir.rest.api.Constants;
 import ca.uhn.fhir.rest.api.MethodOutcome;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import ca.uhn.fhir.rest.param.DateParam;
 import ca.uhn.fhir.rest.param.StringParam;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import org.hl7.fhir.instance.model.api.IBaseResource;

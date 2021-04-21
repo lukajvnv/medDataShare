@@ -13,9 +13,6 @@ import rs.ac.uns.ftn.medDataShare.converter.ClinicalTrialConverter;
 import rs.ac.uns.ftn.medDataShare.dto.form.ClinicalTrialForm;
 import rs.ac.uns.ftn.medDataShare.dto.form.EditClinicalTrialForm;
 import rs.ac.uns.ftn.medDataShare.dto.medInstitution.ClinicalTrialDto;
-import rs.ac.uns.ftn.medDataShare.model.user.User;
-import rs.ac.uns.ftn.medDataShare.util.PdfExporter;
-import rs.ac.uns.ftn.medDataShare.util.StringUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -176,7 +173,7 @@ public class FhirService {
     ){
         ImagingStudy imagingStudy = new ImagingStudy();
         Reference referenceLocation = new Reference(clinicalTrialForm.getDoctor());
-        referenceLocation.setDisplay("display institution name");
+        referenceLocation.setDisplay(clinicalTrialForm.getDoctorName());
         imagingStudy.setLocation(referenceLocation);
         imagingStudy.setDescription(clinicalTrialForm.getConclusion());
         imagingStudy.setStatus(ImagingStudy.ImagingStudyStatus.REGISTERED);

@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#export DB_URL="mongodb://localhost:27017"
 export DB_URL="mongodb+srv://lukaMedDataShare:x594VybYG45XWsNQ@cluster0.wa47o.gcp.mongodb.net/test?retryWrites=true&w=majority"
 export DB_USER_NAME=lukaMedDataShare
 export DB_USER_DB=admin

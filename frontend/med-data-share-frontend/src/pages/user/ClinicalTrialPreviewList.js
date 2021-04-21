@@ -25,12 +25,12 @@ import ClinicalTrialDetail from "../user/clinical_trial/ClinicalTrialDetail";
 
 class ClinicalTrialPreviewList extends Page {
     clinicalTrialPreviewDescription = [
-        { key: 'clinicalTrial', label: strings.clinicalTrial.detail.clinicalTrial },
+        { key: 'clinicalTrial', transform: 'formatId', label: strings.clinicalTrial.detail.clinicalTrial },
         { key: 'time', transform: 'formatString', label: strings.clinicalTrial.detail.time },
-        { key: 'clinicalTrialType', label: strings.clinicalTrial.detail.clinicalTrialType },
-        { key: 'accessType', label: strings.clinicalTrial.detail.accessType },
+        { key: 'clinicalTrialType', transform: 'formatTrialType', label: strings.clinicalTrial.detail.clinicalTrialType },
+        { key: 'accessType', transform: 'formatAccessRights', label: strings.clinicalTrial.detail.accessType },
         { key: 'institution', label: strings.clinicalTrial.detail.institution },
-        { key: 'patientId', label: strings.clinicalTrial.detail.patient },
+        // { key: 'patientId', label: strings.clinicalTrial.detail.patient },
     ];
 
     validationList = {
@@ -208,8 +208,10 @@ class ClinicalTrialPreviewList extends Page {
 
     renderClinicalTrialPreview(clinicalTrialPreview){
         const id = clinicalTrialPreview.clinicalTrial;
-        const title = "ClinicalTrial: " + id;
-        const message = `Date: ${this.renderColumnDate(clinicalTrialPreview.time)}, ClinicalTrialType: ${clinicalTrialPreview.clinicalTrialType}`
+        const title = `${strings.clinicalTrial.term}:  ${this.renderId(id)}`;
+        const clinicalTrialTypeKey = clinicalTrialPreview.clinicalTrialType.toLowerCase();
+        const clinicalTrialTypeLabel = strings.clinicalTrial.form[clinicalTrialTypeKey];
+        const message = `${strings.clinicalTrial.preview.date}: ${this.renderColumnDate(clinicalTrialPreview.time)}, ${strings.clinicalTrial.preview.clinicalTrialType}: ${clinicalTrialTypeLabel}`
 
         return <Card 
                     key={id}

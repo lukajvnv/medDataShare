@@ -163,11 +163,16 @@ public class UserService {
         String currentDate = StringUtil.parseDate(new Date());
         ClinicalTrialOfflineDto clinicalTrialOfflineChaincodeDto = hyperledgerService.accessToClinicalTrial(user, clinicalTrialId, currentDate, accessUserRole);
         ClinicalTrialDto offlineClinicalTrial = fhirService.getImagingStudy(clinicalTrialOfflineChaincodeDto.getOfflineDataUrl());
-        if(hyperledgerService.validData(offlineClinicalTrial.toString(), clinicalTrialOfflineChaincodeDto.getHashData())){
+
+        if(hyperledgerService.areDataValid(offlineClinicalTrial.toString(), clinicalTrialOfflineChaincodeDto.getHashData())){
             if(clinicalTrialOfflineChaincodeDto.isAnonymity()){
                 //anonymize data
                 offlineClinicalTrial = anonymizeData(offlineClinicalTrial);
             }
+            String doctorId = symmetricCryptography.getInfoFromDb(offlineClinicalTrial.getDoctorId());
+            MedWorker doctor = medWorkerRepository.getOne(doctorId);
+            String medInstitution = doctor.getMedInstitution().getName();
+            offlineClinicalTrial.setInstitution(medInstitution);
             return offlineClinicalTrial;
         } else {
             throw new Exception("Data are corrupted!!!");

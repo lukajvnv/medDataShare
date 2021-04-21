@@ -24,11 +24,12 @@ import ImportExportIcon from '@material-ui/icons/ImportExport';
 import AccessType from '../../../constants/AccessType';
 
 import { getClinicalTrialInPdf, getClinicalTrialImage } from '../../../services/UserService';
+import { locallizeTrialType, locallizeTrialAccessRights, renderId } from '../../../util/ClinicalTrialUtil';
 
 const accessTypeDatasource = [
-    {key: AccessType.FORBIDDEN, label: 'For private use only'},
-    {key: AccessType.UNCONDITIONAL, label: 'Unlimited access'},
-    {key: AccessType.ASK_FOR_ACCESS, label: 'Ask for access'}
+    {key: AccessType.FORBIDDEN, label: strings.clinicalTrial.form.accessType.FORBIDDEN},
+    {key: AccessType.UNCONDITIONAL, label: strings.clinicalTrial.form.accessType.UNCONDITIONAL},
+    {key: AccessType.ASK_FOR_ACCESS, label: strings.clinicalTrial.form.accessType.ASK_FOR_ACCESS}
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -54,7 +55,10 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 });
 
 const transformationFunctions = {
-    formatString: (value) => dateToString(value)
+    formatString: (value) => dateToString(value),
+    formatTrialType: (value) => locallizeTrialType(value),
+    formatAccessRights: (value) => locallizeTrialAccessRights(value),
+    formatId: (value) => renderId(value, 20)
 }
 
 const renderClinicalTrialAttribute = (clinicalTrialAttributeMeta, clinicalTrial, styleClass) => {
@@ -161,14 +165,14 @@ const ClinicalTrialDetail = ({
                 form && <Box mb={1}>
                     <Paper className="paper">
                         <Typography gutterBottom variant="h5" component="h2" color="primary" className={classes.orange}>
-                            {strings.clinicalTrial.form.clinicalTrialType}
+                            {strings.clinicalTrial.detail.accessTypePlaceholder}
                         </Typography>
                         <FormControl 
                             className="formControl"
                             required
                             error={hasError(errors, 'accessType')}
                         >
-                            <InputLabel id="accessTypeId">{strings.clinicalTrial.form.clinicalTrialType}</InputLabel>
+                            <InputLabel id="accessTypeId">{strings.clinicalTrial.detail.accessType}</InputLabel>
                             <Select
                                 labelId="accessTypeId"
                                 onChange={onChange}
@@ -209,7 +213,7 @@ const ClinicalTrialDetail = ({
                             <Typography 
                                 className={classes.secondaryHeading}
                             >
-                                I am an accordion
+                                {strings.clinicalTrial.detail.imagePlaceholder}
                             </Typography> 
                         </AccordionSummary>
                         <AccordionDetails>

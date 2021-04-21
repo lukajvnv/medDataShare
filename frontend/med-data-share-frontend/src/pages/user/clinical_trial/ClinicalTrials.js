@@ -17,6 +17,7 @@ import {
 
 import { DataGrid } from '@material-ui/data-grid';
 import ClinicalTrialDetail from "./ClinicalTrialDetail";
+import { locallizeTrialType, locallizeTrialAccessRights } from '../../../util/ClinicalTrialUtil';
 
 const columns = [
     { 
@@ -31,29 +32,34 @@ const columns = [
         valueGetter: (params) =>
         `${dateToString(params.getValue('time')) || ''}`, 
     },
-    { 
-        field: 'patient', 
-        headerName: strings.clinicalTrial.detail.patient, 
-        width: 300 
-    },
+    // { 
+    //     field: 'patient', 
+    //     headerName: strings.clinicalTrial.detail.patient, 
+    //     width: 300 
+    // },
     { 
         field: 'doctor', 
         headerName: strings.clinicalTrial.detail.doctor, 
-        width: 300 
+        width: 400 
     },
     { 
         field: 'clinicalTrialType', 
         headerName: strings.clinicalTrial.detail.clinicalTrialType, 
-        width: 100 
+        width: 200,
+        valueGetter: (params) =>  
+        `${locallizeTrialType(params.getValue('clinicalTrialType')) || ''}`
+
     },
     { 
         field: 'accessType', 
         headerName: strings.clinicalTrial.detail.accessType, 
-        width: 200 
+        width: 300,
+        valueGetter: (params) =>  
+        `${locallizeTrialAccessRights(params.getValue('accessType')) || ''}`
     },
     {
         field: 'detail',
-        headerName: 'Detail',
+        headerName: strings.clinicalTrial.detail.text,
         description: 'Detail information about clinical trial',
         sortable: false,
         renderCell: ({data}) => {
@@ -67,13 +73,13 @@ class ClinicalTrials extends Page {
     attributesDescription = [
         { key: 'id', label: strings.clinicalTrial.detail.id },
         { key: 'time', transform: 'formatString', label: strings.clinicalTrial.detail.time },
-        { key: 'patient', label: strings.clinicalTrial.detail.patient },
+        // { key: 'patient', label: strings.clinicalTrial.detail.patient },
         { key: 'doctor', label: strings.clinicalTrial.detail.doctor },
-        { key: 'clinicalTrialType', label: strings.clinicalTrial.detail.clinicalTrialType },
+        { key: 'clinicalTrialType', transform: 'formatTrialType', label: strings.clinicalTrial.detail.clinicalTrialType },
         { key: 'introduction', label: strings.clinicalTrial.detail.introduction },
         { key: 'relevantParameters', label: strings.clinicalTrial.detail.relevantParameters },   
         { key: 'conclusion', label: strings.clinicalTrial.detail.conclusion },
-        { key: 'accessType', label: strings.clinicalTrial.detail.accessType } 
+        { key: 'accessType', transform: 'formatAccessRights', label: strings.clinicalTrial.detail.accessType } 
      
     ];
 

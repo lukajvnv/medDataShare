@@ -19,9 +19,10 @@ public class MedInstitutionConverter implements ConverterInterface<MedInstitutio
     public MedInstitutionDto convertToDto(MedInstitution medInstitution) {
         return new MedInstitutionDto(
                 medInstitution.getId(),
+                medInstitution.getMembershipOrganizationId(),
                 medInstitution.getName(),
-                medInstitution.getAddress(),
-                medInstitution.getMembershipOrganizationId());
+                medInstitution.getAddress()
+        );
     }
 
     @Override
@@ -34,6 +35,7 @@ public class MedInstitutionConverter implements ConverterInterface<MedInstitutio
                 medInstitutionDto.getId(),
                 medInstitutionDto.getName(),
                 medInstitutionDto.getAddress(),
-                membershipOrganizationId);
+                membershipOrganizationId
+        );
     }
 }
