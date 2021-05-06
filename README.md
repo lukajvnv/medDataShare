@@ -13,7 +13,11 @@ Basic functionalities of the application are:
 * Defining access rights for patient's own health documents by himself
 * Making decision upon examination access request  
 
-### Configuration setup
+## System architecture
+![system_architecture](https://user-images.githubusercontent.com/44602021/117282128-b1548100-ae64-11eb-9958-4bf3958a60a5.png)
+
+
+## Configuration setup
 Hyperledger Fabric is used for blockchain network configuration. For installing Fabric and all necessary programs visit [prerequisites](https://hyperledger-fabric.readthedocs.io/en/latest/prereqs.html) and [installation process](https://hyperledger-fabric.readthedocs.io/en/latest/install.html). Latest version
 of Hyperledger Fabric is implemented in this project. The configuration and organization of the network is similar to Fabric [test network](https://hyperledger-fabric.readthedocs.io/en/latest/test_network.html).
 
