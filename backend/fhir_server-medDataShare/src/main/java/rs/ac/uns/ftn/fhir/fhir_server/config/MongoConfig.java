@@ -24,7 +24,7 @@ public class MongoConfig {
     @Bean
     public MongoClient mongo() {
         String connectUrl = getMongoDatabaseUrl();
-        String DB_USER_NAME = environment.getProperty("DB_USER_NAME");
+        /*String DB_USER_NAME = environment.getProperty("DB_USER_NAME");
         String DB_USER_DB = environment.getProperty("DB_USER_DB");
         String DB_USER_PASS = environment.getProperty("DB_USER_PASS");
 
@@ -32,7 +32,7 @@ public class MongoConfig {
                 DB_USER_NAME,
                 DB_USER_DB,
                 DB_USER_PASS.toCharArray()
-        );
+        );*/
 //        MongoCredential.createScramSha256Credential()
         ConnectionString connectionString = new ConnectionString(connectUrl);
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()

@@ -33,19 +33,6 @@ public class ImageUtil {
         }
     }
 
-    public static byte[] getBytes() {
-        String fileName = "ct_small.jpg";
-        String fileUrl = IMAGE_FOLDER + fileName;
-        File outputFile = new File(fileUrl);
-        try {
-            byte[] ui = Files.readAllBytes(outputFile.toPath());
-            return ui;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     public static byte[] getFile(String file, String extension) {
         String fileName = file + "." + extension;
         String fileUrl = IMAGE_FOLDER + fileName;

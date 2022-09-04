@@ -38,24 +38,7 @@ public class KeyStoreHelper {
 		}
 		return null;
 	}
-    
-//    /**
-//	 * Ucitava sertifikate is KS fajla
-//	 */
-//    public ArrayList<Certificate> readCertificates(String keyStoreFile, String keyStorePass) {
-//			ArrayList<Certificate> listaC = new ArrayList<Certificate>();
-//			String[] lista = new String[] {"eureka", "zuul", "requesthandler"};
-//			//ucitavamo podatke
-//			for(String a : lista) {
-//				Certificate c = readCertificate(keyStoreFile, keyStorePass, a);
-//				if(c != null) {
-//					listaC.add(c);
-//				}
-//			}
-//			return listaC;
-//		
-//	}
-	
+
 	public void loadKeyStore(String fileName, char[] password) {
 		try {
 			if(fileName != null) {
@@ -68,31 +51,6 @@ public class KeyStoreHelper {
 			e.printStackTrace();
 		}
 	}
-	
-	public void saveKeyStore(String fileName, char[] password) {
-		try {
-			keyStore.store(new FileOutputStream(fileName), password);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-									//koji ovde tacno ide kljuc, sa cim mora biti kompatibilan(onim u subject data???)
-//	public void write(String alias, PrivateKey privateKey, char[] password, Certificate certificate) {
-//		try {
-//	
-//			keyStore.setKeyEntry(alias, privateKey, password, new Certificate[] {certificate});
-//		} catch (KeyStoreException e) {
-//			e.printStackTrace();
-//		}
-//	}
-	
-	public void write(String alias, PrivateKey key, char[] password, Certificate cer) {
-		try {
-			keyStore.setKeyEntry(alias, key, password, null);
-		} catch (KeyStoreException e) {
-			e.printStackTrace();
-		}
-	}
 
 	public PrivateKey readPrivateKey(String alias, String pass) {
 		try {
@@ -100,19 +58,6 @@ public class KeyStoreHelper {
 				PrivateKey pk = (PrivateKey) keyStore.getKey(alias, pass.toCharArray());
 				return pk;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	public byte[] encrypt(byte[] input, PublicKey key) {
-		try {
-			Cipher rsaCipherEnc = Cipher.getInstance("RSA/ECB/PKCS1Padding", "BC");
-			rsaCipherEnc.init(Cipher.ENCRYPT_MODE, key);
-			
-			byte[] cipherText = rsaCipherEnc.doFinal(input);
-			return cipherText;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

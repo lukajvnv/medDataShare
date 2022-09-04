@@ -17,7 +17,7 @@ public class Config {
 	public static final String ORG3_AFFILIATION = "org3.department1";
 	public static final String ORG3 = "org3";
 
-	public static final String COMMON_USER_ORG = "org3";
+	public static final String COMMON_USER_ORG = "org2";
 
 	public static final String CHANNEL_NAME = "mychannel";
 
