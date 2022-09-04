@@ -31,4 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+/resources/image/
 /logs/
