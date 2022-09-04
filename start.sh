@@ -38,7 +38,7 @@ function startBackend(){
 }
 
 function startFrontend(){
-  gnome-terminal --tab -- /bin/bash -c "cd $FRONTEND_APP_ROOT; npm start; read"
+  gnome-terminal --tab -- /bin/bash -c "cd $FRONTEND_APP_ROOT; npm install; npm start; read"
 }
 
 clear
